@@ -1,0 +1,278 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Prysmax{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <!-- Statistics Cards -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-number">{{ stats.total_clients }}</div>
+                <div class="stat-label">Total Clients</div>
+                <div class="stat-change positive">
+                    <i class="fas fa-arrow-up"></i>
+                    +88.5%
+                </div>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-key"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-number">{{ "{:,}".format(stats.passwords_captured) }}</div>
+                <div class="stat-label">Passwords Captured</div>
+                <div class="stat-change positive">
+                    <i class="fas fa-arrow-up"></i>
+                    +18.3%
+                </div>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-cookie-bite"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-number">{{ "{:,}".format(stats.cookies_stolen) }}</div>
+                <div class="stat-label">Cookies Stolen</div>
+                <div class="stat-change positive">
+                    <i class="fas fa-arrow-up"></i>
+                    +28.8%
+                </div>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon discord">
+                <i class="fab fa-discord"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-number">{{ stats.discord_tokens }}</div>
+                <div class="stat-label">Discord Tokens</div>
+                <div class="stat-change positive">
+                    <i class="fas fa-arrow-up"></i>
+                    +8.8%
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Charts Section -->
+    <div class="charts-grid">
+        <div class="chart-card">
+            <div class="chart-header">
+                <h3>Activity Overview</h3>
+                <div class="chart-controls">
+                    <button class="chart-btn active" data-type="daily">Daily Logs</button>
+                    <button class="chart-btn" data-type="trending">Trending</button>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="activityChart"></canvas>
+            </div>
+        </div>
+        
+        <div class="chart-card">
+            <div class="chart-header">
+                <h3>Geographic Distribution</h3>
+            </div>
+            <div class="chart-container">
+                <canvas id="geoChart"></canvas>
+            </div>
+            <div class="geo-legend">
+                {% for country in geo_data[:6] %}
+                <div class="legend-item">
+                    <span class="legend-color" style="background-color: hsl({{ loop.index0 * 45 }}, 70%, 60%)"></span>
+                    <span class="legend-label">{{ country.country }}</span>
+                    <span class="legend-value">{{ country.percentage }}%</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Activity Table -->
+    <div class="activity-section">
+        <div class="section-header">
+            <h3><i class="fas fa-clock"></i> Recent Activity</h3>
+            <div class="section-controls">
+                <button class="btn btn-primary">
+                    <i class="fas fa-sync-alt"></i>
+                    Refresh
+                </button>
+                <button class="btn btn-secondary">
+                    <i class="fas fa-filter"></i>
+                    Filter
+                </button>
+                <button class="btn btn-secondary">
+                    <i class="fas fa-download"></i>
+                    Download
+                </button>
+            </div>
+        </div>
+        
+        <div class="table-container">
+            <table class="activity-table">
+                <thead>
+                    <tr>
+                        <th><i class="fas fa-calendar"></i> Date</th>
+                        <th><i class="fas fa-user"></i> Victim</th>
+                        <th><i class="fas fa-globe"></i> IP</th>
+                        <th><i class="fas fa-flag"></i> Country</th>
+                        <th><i class="fas fa-desktop"></i> System</th>
+                        <th><i class="fas fa-shield-alt"></i> Status</th>
+                        <th><i class="fas fa-chart-bar"></i> Stats</th>
+                        <th><i class="fas fa-cog"></i> Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for victim in recent_victims %}
+                    <tr>
+                        <td>
+                            <div class="date-cell">
+                                <span class="date">{{ victim.last_seen.strftime('%m/%d/%Y') }}</span>
+                                <span class="time">{{ victim.last_seen.strftime('%H:%M') }}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="victim-cell">
+                                <span class="victim-id">{{ victim.victim_id }}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="ip-address">{{ victim.ip_address }}</span>
+                        </td>
+                        <td>
+                            <div class="country-cell">
+                                <span class="flag-icon">🇩🇪</span>
+                                <span>{{ victim.country or 'Unknown' }}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="system-cell">
+                                <span class="os-icon"><i class="fab fa-windows"></i></span>
+                                <span>Windows 11 (22H2)</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="status-badge {% if victim.status == 'active' %}secure{% else %}vulnerable{% endif %}">
+                                {{ victim.status.title() }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="stats-cell">
+                                <span class="stat-item"><i class="fas fa-key"></i> 651</span>
+                                <span class="stat-item"><i class="fas fa-cookie"></i> 1</span>
+                                <span class="stat-item"><i class="fas fa-file"></i> 0</span>
+                                <span class="stat-item"><i class="fas fa-shield"></i> 813</span>
+                                <span class="stat-item"><i class="fas fa-download"></i> 0</span>
+                                <span class="stat-item"><i class="fas fa-eye"></i> 0</span>
+                                <span class="stat-item"><i class="fas fa-camera"></i> 0</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="actions-cell">
+                                <button class="action-btn" title="View Details">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="action-btn" title="Download">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Activity Chart
+const activityCtx = document.getElementById('activityChart').getContext('2d');
+const activityChart = new Chart(activityCtx, {
+    type: 'line',
+    data: {
+        labels: {{ activity_data | map(attribute='date') | list | tojson }},
+        datasets: [{
+            label: 'Daily Logs',
+            data: {{ activity_data | map(attribute='logs') | list | tojson }},
+            borderColor: '#8b5cf6',
+            backgroundColor: 'rgba(139, 92, 246, 0.1)',
+            borderWidth: 2,
+            fill: true,
+            tension: 0.4
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                display: false
+            }
+        },
+        scales: {
+            x: {
+                grid: {
+                    color: 'rgba(255, 255, 255, 0.1)'
+                },
+                ticks: {
+                    color: '#9ca3af'
+                }
+            },
+            y: {
+                grid: {
+                    color: 'rgba(255, 255, 255, 0.1)'
+                },
+                ticks: {
+                    color: '#9ca3af'
+                }
+            }
+        }
+    }
+});
+
+// Geographic Chart
+const geoCtx = document.getElementById('geoChart').getContext('2d');
+const geoChart = new Chart(geoCtx, {
+    type: 'doughnut',
+    data: {
+        labels: {{ geo_data | map(attribute='country') | list | tojson }},
+        datasets: [{
+            data: {{ geo_data | map(attribute='count') | list | tojson }},
+            backgroundColor: [
+                '#8b5cf6', '#a855f7', '#c084fc', '#d8b4fe',
+                '#e9d5ff', '#f3e8ff', '#faf5ff', '#7c3aed', '#6d28d9'
+            ],
+            borderWidth: 0
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                display: false
+            }
+        },
+        cutout: '60%'
+    }
+});
+
+// Refresh functionality
+document.querySelector('.btn-primary').addEventListener('click', function() {
+    location.reload();
+});
+</script>
+{% endblock %}
+

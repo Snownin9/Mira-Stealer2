@@ -1,0 +1,268 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Panel - Prysmax{% endblock %}
+
+{% block content %}
+<div class="admin-panel">
+    <div class="admin-header">
+        <h1><i class="fas fa-users-cog"></i> Admin Panel</h1>
+        <p>Manage users, victims, and system settings</p>
+    </div>
+
+    <div class="admin-content">
+        <!-- Users Management -->
+        <div class="admin-section">
+            <div class="section-header">
+                <h2><i class="fas fa-users"></i> User Management</h2>
+                <button class="btn-primary" onclick="showAddUserModal()">
+                    <i class="fas fa-plus"></i> Add User
+                </button>
+            </div>
+            
+            <div class="table-container">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Created</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr>
+                            <td>{{ user.id }}</td>
+                            <td>{{ user.username }}</td>
+                            <td>{{ user.email }}</td>
+                            <td>
+                                <span class="role-badge {{ 'admin' if user.is_admin else 'user' }}">
+                                    {{ 'Administrator' if user.is_admin else 'User' }}
+                                </span>
+                            </td>
+                            <td>{{ user.created_at.strftime('%Y-%m-%d') if user.created_at else 'Unknown' }}</td>
+                            <td>
+                                <button class="btn-edit" onclick="editUser({{ user.id }})">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                {% if not user.is_admin %}
+                                <button class="btn-delete" onclick="deleteUser({{ user.id }})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Victims Management -->
+        <div class="admin-section">
+            <div class="section-header">
+                <h2><i class="fas fa-desktop"></i> Victim Management</h2>
+                <div class="section-stats">
+                    <span class="stat-item">Total: {{ victims|length }}</span>
+                    <span class="stat-item">Active: {{ victims|selectattr('status', 'equalto', 'active')|list|length }}</span>
+                </div>
+            </div>
+            
+            <div class="table-container">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Victim ID</th>
+                            <th>IP Address</th>
+                            <th>Country</th>
+                            <th>First Seen</th>
+                            <th>Last Seen</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for victim in victims %}
+                        <tr>
+                            <td>{{ victim.victim_id }}</td>
+                            <td>{{ victim.ip_address }}</td>
+                            <td>{{ victim.country }}</td>
+                            <td>{{ victim.first_seen.strftime('%Y-%m-%d %H:%M') if victim.first_seen else 'Unknown' }}</td>
+                            <td>{{ victim.last_seen.strftime('%Y-%m-%d %H:%M') if victim.last_seen else 'Unknown' }}</td>
+                            <td>
+                                <span class="status-badge {{ victim.status }}">
+                                    {{ victim.status.title() }}
+                                </span>
+                            </td>
+                            <td>
+                                <button class="btn-view" onclick="viewVictim('{{ victim.victim_id }}')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn-delete" onclick="deleteVictim('{{ victim.victim_id }}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.admin-panel {
+    padding: 20px;
+}
+
+.admin-header {
+    margin-bottom: 30px;
+}
+
+.admin-header h1 {
+    color: #8b5cf6;
+    margin-bottom: 10px;
+}
+
+.admin-section {
+    background: #1e1e2e;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 30px;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.section-header h2 {
+    color: #ffffff;
+    margin: 0;
+}
+
+.table-container {
+    overflow-x: auto;
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.admin-table th,
+.admin-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #2a2a3e;
+}
+
+.admin-table th {
+    background: #2a2a3e;
+    color: #8b5cf6;
+    font-weight: 600;
+}
+
+.role-badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.role-badge.admin {
+    background: #ef4444;
+    color: white;
+}
+
+.role-badge.user {
+    background: #10b981;
+    color: white;
+}
+
+.status-badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.status-badge.active {
+    background: #10b981;
+    color: white;
+}
+
+.status-badge.inactive {
+    background: #6b7280;
+    color: white;
+}
+
+.btn-edit, .btn-delete, .btn-view {
+    padding: 6px 8px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 5px;
+}
+
+.btn-edit {
+    background: #3b82f6;
+    color: white;
+}
+
+.btn-delete {
+    background: #ef4444;
+    color: white;
+}
+
+.btn-view {
+    background: #8b5cf6;
+    color: white;
+}
+
+.section-stats {
+    display: flex;
+    gap: 15px;
+}
+
+.stat-item {
+    background: #2a2a3e;
+    padding: 8px 12px;
+    border-radius: 6px;
+    color: #8b5cf6;
+    font-weight: 600;
+}
+</style>
+
+<script>
+function editUser(userId) {
+    alert('Edit user functionality - User ID: ' + userId);
+}
+
+function deleteUser(userId) {
+    if (confirm('Are you sure you want to delete this user?')) {
+        alert('Delete user functionality - User ID: ' + userId);
+    }
+}
+
+function viewVictim(victimId) {
+    alert('View victim functionality - Victim ID: ' + victimId);
+}
+
+function deleteVictim(victimId) {
+    if (confirm('Are you sure you want to delete this victim?')) {
+        alert('Delete victim functionality - Victim ID: ' + victimId);
+    }
+}
+
+function showAddUserModal() {
+    alert('Add user modal functionality');
+}
+</script>
+{% endblock %}
+

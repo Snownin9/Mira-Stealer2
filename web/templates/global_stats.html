@@ -1,0 +1,409 @@
+{% extends "base.html" %}
+
+{% block title %}Global Statistics - Prysmax{% endblock %}
+
+{% block content %}
+<div class="global-stats-page">
+    <div class="page-header">
+        <h1><i class="fas fa-chart-line"></i> Global Statistics</h1>
+        <p>Comprehensive analytics and performance metrics</p>
+    </div>
+    
+    <!-- Overview Cards -->
+    <div class="overview-grid">
+        <div class="overview-card">
+            <div class="card-icon">
+                <i class="fas fa-globe"></i>
+            </div>
+            <div class="card-content">
+                <h3>Total Infections</h3>
+                <div class="stat-number">{{ stats_data.total_infections or 1247 }}</div>
+                <div class="stat-change positive">
+                    <i class="fas fa-arrow-up"></i>
+                    +12.5% this week
+                </div>
+            </div>
+        </div>
+        
+        <div class="overview-card">
+            <div class="card-icon">
+                <i class="fas fa-database"></i>
+            </div>
+            <div class="card-content">
+                <h3>Data Collected</h3>
+                <div class="stat-number">{{ stats_data.data_collected or '2.4 TB' }}</div>
+                <div class="stat-change positive">
+                    <i class="fas fa-arrow-up"></i>
+                    +8.3% this week
+                </div>
+            </div>
+        </div>
+        
+        <div class="overview-card">
+            <div class="card-icon">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <div class="card-content">
+                <h3>Success Rate</h3>
+                <div class="stat-number">{{ stats_data.success_rate or '94.2%' }}</div>
+                <div class="stat-change positive">
+                    <i class="fas fa-arrow-up"></i>
+                    +2.1% this week
+                </div>
+            </div>
+        </div>
+        
+        <div class="overview-card">
+            <div class="card-icon">
+                <i class="fas fa-clock"></i>
+            </div>
+            <div class="card-content">
+                <h3>Avg. Response Time</h3>
+                <div class="stat-number">{{ stats_data.avg_response_time or '1.2s' }}</div>
+                <div class="stat-change negative">
+                    <i class="fas fa-arrow-down"></i>
+                    -0.3s this week
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Charts Section -->
+    <div class="charts-section">
+        <div class="chart-row">
+            <div class="chart-card large">
+                <div class="chart-header">
+                    <h3>Infection Trends</h3>
+                    <div class="chart-controls">
+                        <select class="chart-period">
+                            <option value="7d">Last 7 days</option>
+                            <option value="30d">Last 30 days</option>
+                            <option value="90d">Last 90 days</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="infectionTrendsChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3>Data Types Distribution</h3>
+                </div>
+                <div class="chart-container">
+                    <canvas id="dataTypesChart"></canvas>
+                </div>
+                <div class="chart-legend">
+                    <div class="legend-item">
+                        <span class="legend-color" style="background: #8b5cf6;"></span>
+                        <span>Passwords</span>
+                        <span class="legend-value">45%</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background: #a855f7;"></span>
+                        <span>Cookies</span>
+                        <span class="legend-value">28%</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background: #c084fc;"></span>
+                        <span>Tokens</span>
+                        <span class="legend-value">15%</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background: #d8b4fe;"></span>
+                        <span>Wallets</span>
+                        <span class="legend-value">12%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="chart-row">
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3>Top Countries</h3>
+                </div>
+                <div class="countries-list">
+                    <div class="country-item">
+                        <div class="country-info">
+                            <span class="flag">🇺🇸</span>
+                            <span class="name">United States</span>
+                        </div>
+                        <div class="country-stats">
+                            <span class="count">342</span>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 85%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="country-item">
+                        <div class="country-info">
+                            <span class="flag">🇩🇪</span>
+                            <span class="name">Germany</span>
+                        </div>
+                        <div class="country-stats">
+                            <span class="count">198</span>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 58%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="country-item">
+                        <div class="country-info">
+                            <span class="flag">🇬🇧</span>
+                            <span class="name">United Kingdom</span>
+                        </div>
+                        <div class="country-stats">
+                            <span class="count">156</span>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 46%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="country-item">
+                        <div class="country-info">
+                            <span class="flag">🇫🇷</span>
+                            <span class="name">France</span>
+                        </div>
+                        <div class="country-stats">
+                            <span class="count">134</span>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 39%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="country-item">
+                        <div class="country-info">
+                            <span class="flag">🇨🇦</span>
+                            <span class="name">Canada</span>
+                        </div>
+                        <div class="country-stats">
+                            <span class="count">89</span>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 26%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3>Browser Distribution</h3>
+                </div>
+                <div class="chart-container">
+                    <canvas id="browserChart"></canvas>
+                </div>
+                <div class="browser-stats">
+                    <div class="browser-item">
+                        <i class="fab fa-chrome"></i>
+                        <span>Chrome</span>
+                        <span class="percentage">68%</span>
+                    </div>
+                    <div class="browser-item">
+                        <i class="fab fa-firefox"></i>
+                        <span>Firefox</span>
+                        <span class="percentage">18%</span>
+                    </div>
+                    <div class="browser-item">
+                        <i class="fab fa-edge"></i>
+                        <span>Edge</span>
+                        <span class="percentage">9%</span>
+                    </div>
+                    <div class="browser-item">
+                        <i class="fab fa-opera"></i>
+                        <span>Opera</span>
+                        <span class="percentage">5%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Performance Metrics -->
+    <div class="performance-section">
+        <div class="performance-card">
+            <div class="performance-header">
+                <h3>System Performance</h3>
+                <div class="performance-controls">
+                    <button class="btn btn-secondary" onclick="refreshMetrics()">
+                        <i class="fas fa-sync-alt"></i>
+                        Refresh
+                    </button>
+                </div>
+            </div>
+            
+            <div class="metrics-grid">
+                <div class="metric-item">
+                    <div class="metric-label">CPU Usage</div>
+                    <div class="metric-value">23%</div>
+                    <div class="metric-bar">
+                        <div class="metric-fill" style="width: 23%; background: #10b981;"></div>
+                    </div>
+                </div>
+                
+                <div class="metric-item">
+                    <div class="metric-label">Memory Usage</div>
+                    <div class="metric-value">67%</div>
+                    <div class="metric-bar">
+                        <div class="metric-fill" style="width: 67%; background: #f59e0b;"></div>
+                    </div>
+                </div>
+                
+                <div class="metric-item">
+                    <div class="metric-label">Disk Usage</div>
+                    <div class="metric-value">45%</div>
+                    <div class="metric-bar">
+                        <div class="metric-fill" style="width: 45%; background: #3b82f6;"></div>
+                    </div>
+                </div>
+                
+                <div class="metric-item">
+                    <div class="metric-label">Network I/O</div>
+                    <div class="metric-value">12 MB/s</div>
+                    <div class="metric-bar">
+                        <div class="metric-fill" style="width: 30%; background: #8b5cf6;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Infection Trends Chart
+const infectionCtx = document.getElementById('infectionTrendsChart').getContext('2d');
+const infectionChart = new Chart(infectionCtx, {
+    type: 'line',
+    data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+        datasets: [{
+            label: 'Infections',
+            data: [65, 89, 123, 156, 198, 234, 267],
+            borderColor: '#8b5cf6',
+            backgroundColor: 'rgba(139, 92, 246, 0.1)',
+            borderWidth: 3,
+            fill: true,
+            tension: 0.4
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                display: false
+            }
+        },
+        scales: {
+            x: {
+                grid: {
+                    color: 'rgba(255, 255, 255, 0.1)'
+                },
+                ticks: {
+                    color: '#9ca3af'
+                }
+            },
+            y: {
+                grid: {
+                    color: 'rgba(255, 255, 255, 0.1)'
+                },
+                ticks: {
+                    color: '#9ca3af'
+                }
+            }
+        }
+    }
+});
+
+// Data Types Chart
+const dataTypesCtx = document.getElementById('dataTypesChart').getContext('2d');
+const dataTypesChart = new Chart(dataTypesCtx, {
+    type: 'doughnut',
+    data: {
+        labels: ['Passwords', 'Cookies', 'Tokens', 'Wallets'],
+        datasets: [{
+            data: [45, 28, 15, 12],
+            backgroundColor: ['#8b5cf6', '#a855f7', '#c084fc', '#d8b4fe'],
+            borderWidth: 0
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                display: false
+            }
+        },
+        cutout: '60%'
+    }
+});
+
+// Browser Chart
+const browserCtx = document.getElementById('browserChart').getContext('2d');
+const browserChart = new Chart(browserCtx, {
+    type: 'bar',
+    data: {
+        labels: ['Chrome', 'Firefox', 'Edge', 'Opera'],
+        datasets: [{
+            data: [68, 18, 9, 5],
+            backgroundColor: ['#8b5cf6', '#a855f7', '#c084fc', '#d8b4fe'],
+            borderRadius: 4,
+            borderSkipped: false
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                display: false
+            }
+        },
+        scales: {
+            x: {
+                grid: {
+                    display: false
+                },
+                ticks: {
+                    color: '#9ca3af'
+                }
+            },
+            y: {
+                grid: {
+                    color: 'rgba(255, 255, 255, 0.1)'
+                },
+                ticks: {
+                    color: '#9ca3af'
+                }
+            }
+        }
+    }
+});
+
+function refreshMetrics() {
+    // Simulate metric refresh
+    const metrics = document.querySelectorAll('.metric-value');
+    metrics.forEach(metric => {
+        const currentValue = parseInt(metric.textContent);
+        const newValue = Math.max(0, Math.min(100, currentValue + Math.floor(Math.random() * 20) - 10));
+        metric.textContent = newValue + '%';
+        
+        const fill = metric.parentElement.querySelector('.metric-fill');
+        fill.style.width = newValue + '%';
+    });
+}
+
+// Auto-refresh metrics every 30 seconds
+setInterval(refreshMetrics, 30000);
+</script>
+{% endblock %}
+

@@ -1,0 +1,508 @@
+{% extends "base.html" %}
+
+{% block title %}Profile - Prysmax{% endblock %}
+
+{% block content %}
+<div class="profile-page">
+    <div class="page-header">
+        <h1><i class="fas fa-user"></i> User Profile</h1>
+        <p>Manage your account settings and preferences</p>
+    </div>
+    
+    <div class="profile-container">
+        <!-- Profile Info Card -->
+        <div class="profile-card">
+            <div class="profile-header">
+                <div class="profile-avatar">
+                    <div class="avatar-circle">
+                        {{ user.username[0].upper() if user.username else 'U' }}
+                    </div>
+                    <button class="avatar-upload-btn">
+                        <i class="fas fa-camera"></i>
+                    </button>
+                </div>
+                <div class="profile-info">
+                    <h2>{{ user.username or 'Unknown User' }}</h2>
+                    <p class="profile-role">{{ user.role.title() if user.role else 'User' }}</p>
+                    <p class="profile-status">
+                        <span class="status-indicator {{ user.status if user.status else 'active' }}"></span>
+                        {{ user.status.title() if user.status else 'Active' }}
+                    </p>
+                </div>
+            </div>
+            
+            <div class="profile-stats">
+                <div class="stat-item">
+                    <div class="stat-value">{{ user.login_count or 0 }}</div>
+                    <div class="stat-label">Total Logins</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">{{ user.builds_created or 0 }}</div>
+                    <div class="stat-label">Builds Created</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">{{ user.victims_managed or 0 }}</div>
+                    <div class="stat-label">Victims Managed</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">{{ user.days_active or 0 }}</div>
+                    <div class="stat-label">Days Active</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Profile Settings -->
+        <div class="settings-section">
+            <div class="settings-tabs">
+                <button class="settings-tab active" onclick="showSettingsTab('general')">
+                    <i class="fas fa-user-cog"></i>
+                    General
+                </button>
+                <button class="settings-tab" onclick="showSettingsTab('security')">
+                    <i class="fas fa-shield-alt"></i>
+                    Security
+                </button>
+                <button class="settings-tab" onclick="showSettingsTab('preferences')">
+                    <i class="fas fa-sliders-h"></i>
+                    Preferences
+                </button>
+                <button class="settings-tab" onclick="showSettingsTab('activity')">
+                    <i class="fas fa-history"></i>
+                    Activity
+                </button>
+            </div>
+            
+            <!-- General Settings -->
+            <div id="general-settings" class="settings-content active">
+                <div class="settings-card">
+                    <h3>General Information</h3>
+                    <form id="generalForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="username">Username</label>
+                                <input type="text" id="username" name="username" value="{{ user.username or '' }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email Address</label>
+                                <input type="email" id="email" name="email" value="{{ user.email or '' }}">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="firstName">First Name</label>
+                                <input type="text" id="firstName" name="firstName" value="{{ user.first_name or '' }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="lastName">Last Name</label>
+                                <input type="text" id="lastName" name="lastName" value="{{ user.last_name or '' }}">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="bio">Bio</label>
+                            <textarea id="bio" name="bio" rows="3" placeholder="Tell us about yourself...">{{ user.bio or '' }}</textarea>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i>
+                                Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Security Settings -->
+            <div id="security-settings" class="settings-content">
+                <div class="settings-card">
+                    <h3>Password & Security</h3>
+                    <form id="securityForm">
+                        <div class="form-group">
+                            <label for="currentPassword">Current Password</label>
+                            <input type="password" id="currentPassword" name="currentPassword">
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="newPassword">New Password</label>
+                                <input type="password" id="newPassword" name="newPassword">
+                            </div>
+                            <div class="form-group">
+                                <label for="confirmPassword">Confirm Password</label>
+                                <input type="password" id="confirmPassword" name="confirmPassword">
+                            </div>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-key"></i>
+                                Update Password
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="settings-card">
+                    <h3>Two-Factor Authentication</h3>
+                    <div class="security-option">
+                        <div class="option-info">
+                            <h4>Enable 2FA</h4>
+                            <p>Add an extra layer of security to your account</p>
+                        </div>
+                        <div class="option-control">
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="enable2fa" {{ 'checked' if user.two_factor_enabled else '' }}>
+                                <label for="enable2fa"></label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% if user.two_factor_enabled %}
+                    <div class="qr-code-section">
+                        <h4>QR Code</h4>
+                        <div class="qr-code">
+                            <!-- QR code would be generated here -->
+                            <div class="qr-placeholder">
+                                <i class="fas fa-qrcode"></i>
+                                <p>Scan with your authenticator app</p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="settings-card">
+                    <h3>Active Sessions</h3>
+                    <div class="sessions-list">
+                        <div class="session-item current">
+                            <div class="session-info">
+                                <div class="session-device">
+                                    <i class="fas fa-desktop"></i>
+                                    <span>Current Session</span>
+                                </div>
+                                <div class="session-details">
+                                    <span class="session-ip">{{ request.remote_addr }}</span>
+                                    <span class="session-time">Active now</span>
+                                </div>
+                            </div>
+                            <span class="session-badge current">Current</span>
+                        </div>
+                        
+                        <div class="session-item">
+                            <div class="session-info">
+                                <div class="session-device">
+                                    <i class="fas fa-mobile-alt"></i>
+                                    <span>Mobile Device</span>
+                                </div>
+                                <div class="session-details">
+                                    <span class="session-ip">192.168.1.15</span>
+                                    <span class="session-time">2 hours ago</span>
+                                </div>
+                            </div>
+                            <button class="btn btn-danger btn-sm" onclick="terminateSession('mobile')">
+                                Terminate
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Preferences Settings -->
+            <div id="preferences-settings" class="settings-content">
+                <div class="settings-card">
+                    <h3>Interface Preferences</h3>
+                    <div class="preference-group">
+                        <div class="preference-item">
+                            <div class="preference-info">
+                                <h4>Dark Mode</h4>
+                                <p>Use dark theme for the interface</p>
+                            </div>
+                            <div class="preference-control">
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="darkMode" checked>
+                                    <label for="darkMode"></label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="preference-item">
+                            <div class="preference-info">
+                                <h4>Auto-refresh Dashboard</h4>
+                                <p>Automatically refresh dashboard data</p>
+                            </div>
+                            <div class="preference-control">
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="autoRefresh" checked>
+                                    <label for="autoRefresh"></label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="preference-item">
+                            <div class="preference-info">
+                                <h4>Sound Notifications</h4>
+                                <p>Play sounds for important events</p>
+                            </div>
+                            <div class="preference-control">
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="soundNotifications">
+                                    <label for="soundNotifications"></label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="settings-card">
+                    <h3>Notification Preferences</h3>
+                    <div class="notification-group">
+                        <div class="notification-item">
+                            <div class="notification-info">
+                                <h4>New Victim Alerts</h4>
+                                <p>Get notified when new victims are detected</p>
+                            </div>
+                            <div class="notification-control">
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="victimAlerts" checked>
+                                    <label for="victimAlerts"></label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="notification-item">
+                            <div class="notification-info">
+                                <h4>Build Completion</h4>
+                                <p>Get notified when builds are completed</p>
+                            </div>
+                            <div class="notification-control">
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="buildAlerts" checked>
+                                    <label for="buildAlerts"></label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="notification-item">
+                            <div class="notification-info">
+                                <h4>System Alerts</h4>
+                                <p>Get notified about system events and errors</p>
+                            </div>
+                            <div class="notification-control">
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="systemAlerts">
+                                    <label for="systemAlerts"></label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Activity Settings -->
+            <div id="activity-settings" class="settings-content">
+                <div class="settings-card">
+                    <h3>Recent Activity</h3>
+                    <div class="activity-list">
+                        <div class="activity-item">
+                            <div class="activity-icon">
+                                <i class="fas fa-sign-in-alt"></i>
+                            </div>
+                            <div class="activity-info">
+                                <div class="activity-action">Logged in</div>
+                                <div class="activity-time">{{ user.last_login.strftime('%Y-%m-%d %H:%M') if user.last_login else 'Never' }}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="activity-item">
+                            <div class="activity-icon">
+                                <i class="fas fa-cog"></i>
+                            </div>
+                            <div class="activity-info">
+                                <div class="activity-action">Updated profile settings</div>
+                                <div class="activity-time">2025-07-02 15:30</div>
+                            </div>
+                        </div>
+                        
+                        <div class="activity-item">
+                            <div class="activity-icon">
+                                <i class="fas fa-hammer"></i>
+                            </div>
+                            <div class="activity-info">
+                                <div class="activity-action">Created new build</div>
+                                <div class="activity-time">2025-07-02 14:15</div>
+                            </div>
+                        </div>
+                        
+                        <div class="activity-item">
+                            <div class="activity-icon">
+                                <i class="fas fa-download"></i>
+                            </div>
+                            <div class="activity-info">
+                                <div class="activity-action">Downloaded victim data</div>
+                                <div class="activity-time">2025-07-02 12:45</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="settings-card">
+                    <h3>Account Statistics</h3>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-calendar"></i>
+                            </div>
+                            <div class="stat-info">
+                                <div class="stat-value">{{ user.created_at.strftime('%Y-%m-%d') if user.created_at else 'Unknown' }}</div>
+                                <div class="stat-label">Member Since</div>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="stat-info">
+                                <div class="stat-value">{{ user.total_time or '0h' }}</div>
+                                <div class="stat-label">Total Time</div>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div class="stat-info">
+                                <div class="stat-value">{{ user.success_rate or '0%' }}</div>
+                                <div class="stat-label">Success Rate</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function showSettingsTab(tabName) {
+    // Hide all settings content
+    document.querySelectorAll('.settings-content').forEach(content => {
+        content.classList.remove('active');
+    });
+    
+    // Remove active class from all tabs
+    document.querySelectorAll('.settings-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    
+    // Show selected content
+    document.getElementById(tabName + '-settings').classList.add('active');
+    event.target.classList.add('active');
+}
+
+// General Form Handler
+document.getElementById('generalForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const userData = Object.fromEntries(formData);
+    
+    fetch('/api/profile/update', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification('Profile updated successfully!', 'success');
+        } else {
+            showNotification('Failed to update profile: ' + data.message, 'error');
+        }
+    });
+});
+
+// Security Form Handler
+document.getElementById('securityForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const newPassword = formData.get('newPassword');
+    const confirmPassword = formData.get('confirmPassword');
+    
+    if (newPassword !== confirmPassword) {
+        showNotification('Passwords do not match!', 'error');
+        return;
+    }
+    
+    const passwordData = Object.fromEntries(formData);
+    
+    fetch('/api/profile/password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(passwordData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification('Password updated successfully!', 'success');
+            this.reset();
+        } else {
+            showNotification('Failed to update password: ' + data.message, 'error');
+        }
+    });
+});
+
+function terminateSession(sessionId) {
+    if (confirm('Are you sure you want to terminate this session?')) {
+        fetch(`/api/sessions/${sessionId}`, { method: 'DELETE' })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification('Session terminated successfully!', 'success');
+                    location.reload();
+                } else {
+                    showNotification('Failed to terminate session: ' + data.message, 'error');
+                }
+            });
+    }
+}
+
+function showNotification(message, type) {
+    // Use the notification system from main.js
+    if (window.PrysmaxDashboard && window.PrysmaxDashboard.showNotification) {
+        window.PrysmaxDashboard.showNotification(message, type);
+    } else {
+        alert(message);
+    }
+}
+
+// Toggle switches
+document.querySelectorAll('.toggle-switch input').forEach(toggle => {
+    toggle.addEventListener('change', function() {
+        const setting = this.id;
+        const value = this.checked;
+        
+        // Save preference
+        fetch('/api/profile/preferences', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ [setting]: value })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (!data.success) {
+                showNotification('Failed to save preference: ' + data.message, 'error');
+                this.checked = !value; // Revert toggle
+            }
+        });
+    });
+});
+</script>
+{% endblock %}
+

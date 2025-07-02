@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Internal Server Error - Prysmax</title>
+    <style>
+        body {
+            background: #0f0f23;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .error-container {
+            text-align: center;
+            max-width: 500px;
+            padding: 40px;
+        }
+        .error-code {
+            font-size: 6rem;
+            font-weight: bold;
+            color: #8b5cf6;
+            margin-bottom: 20px;
+        }
+        .error-message {
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+            color: #e5e7eb;
+        }
+        .error-description {
+            color: #9ca3af;
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+        .back-button {
+            background: #8b5cf6;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            text-decoration: none;
+            display: inline-block;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+        .back-button:hover {
+            background: #7c3aed;
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <div class="error-code">500</div>
+        <div class="error-message">Internal Server Error</div>
+        <div class="error-description">
+            Something went wrong on our end. Please try again later or contact support if the problem persists.
+        </div>
+        <a href="/login" class="back-button">Back to Login</a>
+    </div>
+</body>
+</html>
+
