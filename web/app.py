@@ -251,6 +251,7 @@ if FLASK_AVAILABLE:
                     'display_date': date.strftime('%m/%d'),
                     'victims': day_victims,
                     'logins': day_victims * 2,
+                    'logs': day_victims * 3,  # Add logs attribute for chart
                     'new_victims': max(1, day_victims // 5)
                 })
             
@@ -268,7 +269,25 @@ if FLASK_AVAILABLE:
         except Exception as e:
             logger.error(f"Dashboard error: {e}")
             flash(f'Dashboard error: {e}')
-            return render_template('dashboard.html', victims=[], stats=None)
+            
+            # Create default stats to prevent template errors
+            default_stats = type('obj', (object,), {
+                'total_clients': 0,
+                'new_clients': 0,
+                'active_clients': 0,
+                'passwords_captured': 0,
+                'cookies_stolen': 0,
+                'discord_tokens': 0,
+                'wallets_found': 0,
+                'files_stolen': 0
+            })()
+            
+            return render_template('dashboard.html', 
+                                 victims=[], 
+                                 stats=default_stats, 
+                                 geo_data=[], 
+                                 activity_data=[], 
+                                 recent_logs=[])
 
     @app.route('/activity-logs')
     @require_login
