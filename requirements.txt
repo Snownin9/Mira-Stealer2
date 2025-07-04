@@ -34,3 +34,6 @@ pywin32>=306; sys_platform == "win32"
 # Selenium for advanced browser automation (optional)
 selenium>=4.11.0
 
+# Build tools (optional, for stealer compilation)
+pyinstaller>=6.0.0
+

