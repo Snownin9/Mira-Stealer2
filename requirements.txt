@@ -1,36 +1,39 @@
-flask==2.3.3
-flask-sqlalchemy==3.0.5
-flask-login==0.6.3
-flask-wtf==1.1.1
-requests==2.31.0
-cryptography==41.0.4
-psutil==5.9.5
-pillow==10.0.0
-pycryptodome==3.18.0
-pywin32==306
-sqlite3
-json
-base64
-os
-sys
-threading
-time
-datetime
-socket
-subprocess
-winreg
-shutil
-zipfile
-tempfile
-uuid
-hashlib
-hmac
-urllib3==2.0.4
-beautifulsoup4==4.12.2
-selenium==4.11.2
-discord.py==2.3.2
-python-telegram-bot==20.5
-aiohttp==3.8.5
-asyncio
-websockets==11.0.3
+# Core web framework dependencies
+flask>=2.3.0
+flask-sqlalchemy>=3.0.0
+flask-login>=0.6.0
+flask-wtf>=1.1.0
+werkzeug>=2.3.0
+
+# Networking and requests
+requests>=2.31.0
+urllib3>=2.0.0
+aiohttp>=3.8.0
+websockets>=11.0.0
+
+# Cryptography and security
+cryptography>=41.0.0
+pycryptodome>=3.18.0
+
+# System and process management
+psutil>=5.9.0
+
+# Image processing
+pillow>=10.0.0
+
+# Web scraping and parsing
+beautifulsoup4>=4.12.0
+
+# Communication platforms (optional)
+discord.py>=2.3.0
+python-telegram-bot>=20.5
+
+# Windows-specific dependencies (conditional)
+pywin32>=306; sys_platform == "win32"
+
+# Selenium for advanced browser automation (optional)
+selenium>=4.11.0
+
+# Build tools (optional, for stealer compilation)
+pyinstaller>=6.0.0
 
